@@ -1,0 +1,69 @@
+<template>
+    <section-register
+    @submit="submit"
+    :mainForm="mainForm"
+    :confirmForm="confirmForm"
+    :additionalForm="additionalForm"
+    :loading="loading"
+    imgname="work-illustration"
+    :step="step">
+    </section-register>
+</template>
+
+<script>
+import SectionRegister from '@/components/SectionRegister'
+export default {
+    components: {
+        SectionRegister
+    },
+    data: () => ({
+        mainForm: {
+            phone: 'deniskindo@mail.ru'
+        },
+        confirmForm: {
+            code: ''
+        },
+        additionalForm: {
+            password: '',
+            confirmPassword: ''
+        },
+        loading: false,
+        step: 'enter'
+    }),
+    methods: {
+        async submit(step, form) {
+            this.loading = true
+            try {
+                await this.$store.dispatch('register', {
+                    step,
+                    form: {...form, phone: this.mainForm.phone, role: 'worker' }
+                })
+                switch (step) {
+                    case 'enter': {
+                        this.step = 'confirm'
+                        return
+                    }
+                    case 'confirm': {
+                        this.step = 'additional'
+                        return
+                    }
+                    default: {
+                        this.$message.success('Вы успешно прошли регистрацию!')
+                        this.$router.push('/worker')
+                    }
+                }
+            } catch(e) {
+                console.log(e)
+                this.loading = false
+            }
+            finally {
+                this.loading = false
+            }
+        }
+    }
+}
+</script>
+
+<style lang="scss" scoped>
+
+</style>
