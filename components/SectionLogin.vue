@@ -1,5 +1,5 @@
 <template>
-    <div class="register">
+    <div class="login-page">
         <div class="wrapper">
             <h3 class="title">Войти в аккаунт</h3>
             <div class="form-container">
@@ -22,12 +22,14 @@
                         </el-input>
                     </el-form-item>
                     <el-form-item>
-                        <el-button
+                        <r-button
+                        class="login-button"
+                        type="primary"
                         :loading="loading"
                         :disabled="loading"
                         @click="$emit('submit', form)">
                             Войти
-                        </el-button>
+                        </r-button>
                     </el-form-item>
                 </el-form>
             </div>
@@ -82,19 +84,25 @@ export default {
 }
 </script>
 
-<style lang="sass" scoped>
-    .register
+<style lang="sass">
+    .login-page
+        display: flex
         height: 90vh
+        min-height: 90vh
         .wrapper
             display: flex
             flex-direction: column
             justify-content: center
             position: relative
-            height: 90%
+            height: 100%
+            .login-button
+                height: 50px
+                box-shadow: 0 10px 25px rgba(25, 63, 246, 0.35)
             .title
                 color: #11175D
                 font-size: 34px
                 margin-bottom: 50px
+                line-height: 50px
             .form-container
                 width: 400px
             .illustration
@@ -125,4 +133,46 @@ export default {
                     margin-right: 0
                 .icon:hover
                     background: rgba(68, 158, 255, 0.05)
+    @media screen and (max-width: 1365px)
+        .illustration
+            width: 50%
+
+    @media screen and (max-width: 1024px)
+        .login-page
+            align-items: center
+            .wrapper
+                align-items: center
+            .title
+                order: 1
+            .illustration
+                position: relative !important
+                order: 2
+                width: 100%
+                height: 300px
+                margin-bottom: 50px
+                // object-fit: cover
+            .form-container
+                order: 3
+            .social
+                width: 400px
+                justify-content: flex-start
+                order: 4
+
+    @media screen and (max-width: 768px)
+        .login-page
+            margin: 50px 0
+            height: auto
+
+    @media screen and (max-width: 450px)
+        .login-page
+            align-items: center
+            .wrapper
+                align-items: center
+                .form-container
+                    width: 100%
+            .social
+                width: 100%
+                justify-content: center !important
+            .el-form-item__content
+                text-align: center
 </style>

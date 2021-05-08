@@ -2,24 +2,47 @@
     <div class="wrapper">
         <div class="search">
             <input
+            v-model="filters.position"
+            @keydown.enter="$emit('confirm-params')"
             class="search__input"
-            placeholder="Какую работу ищем?">
-            <div class="search__filter">
+            :placeholder="renderPlaceholder">
+            <!-- <div class="search__filter">
                 <el-input
                 placeholder="Фильтры">
                 </el-input>
-            </div>
-            <button class="search__button">
-                <i class="el-icon-search"></i>
+            </div> -->
+            <button
+            :disabled="loading"
+            @click="$emit('confirm-params')"
+            class="search__button">
+                <i v-if="!loading" class="el-icon-search"></i>
+                <i v-else class="el-icon-loading"></i>
             </button>
         </div>
     </div>
 </template>
 
 <script>
-    export default {
-        
+export default {
+    props: {
+        role: {
+            type: String,
+            required: true
+        },
+        filters: {
+            type: Object,
+            required: true
+        }
+    },
+    computed: {
+        renderPlaceholder() {
+            return this.role === 'applicant' ? 'Какую работу ищем?' : 'Какое резюме ищем?'
+        },
+        loading() {
+            return this.$store.state.listLoading
+        }
     }
+}
 </script>
 
 <style lang="sass" scoped>
@@ -54,4 +77,27 @@
             background: #F05F3F
             color: #fff
             cursor: pointer
+            &:disabled
+                cursor: not-allowed
+                background: #5473ff
+    @media screen and (max-width: 700px)
+        .search
+            height: 80px
+            &__input
+                padding-left: 25px
+                font-size: 18px
+            &__button
+                right: -40px
+                // transform: translate(-50%, -50%)
+                // top: 10%
+    @media screen and (max-width: 369px)
+        .search
+            height: 70px
+            &__input
+                padding-left: 25px
+                font-size: 18px
+            &__button
+                right: -40px
+                width: 70px
+                height: 70px
 </style>

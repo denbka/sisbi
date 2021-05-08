@@ -1,6 +1,6 @@
 <template>
-    <div>
-        <span>{{getRoleName}}</span>
+    <div class="change-role">
+        <span class="change-role__name">{{getRoleName}}</span>
         <div class="navigate">
             <button
             @click="() => onChange(role)"
@@ -44,7 +44,6 @@ export default {
             return this.$store.state.tempRole
         },
         getRoleName() {
-            console.log(this.getRole)
             return this.roles.find(role => this.getRole === role.pseudo).name
         }
     },
@@ -52,8 +51,11 @@ export default {
 </script>
 
 <style lang="sass" scoped>
+    .change-role
+        button
+            padding: 0
     .bar
-        background: transparent
+        background: transparent !important
         border: none
         margin-right: 10px
         cursor: pointer
@@ -67,4 +69,9 @@ export default {
             background: #193FF6
     .bar:last-child
         margin-right: 0
+    @media screen and (max-width: 1025px)
+        .change-role
+            display: flex
+            &__name
+                margin-right: 50px
 </style>

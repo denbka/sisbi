@@ -1,4 +1,6 @@
 export default {
+
+  target: 'server',
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
     title: 'sisbi',
@@ -7,7 +9,8 @@ export default {
       { lang: 'ru' },
       { charset: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-      { hid: 'description', name: 'description', content: '' }
+      { hid: 'description', name: 'description', content: '' },
+      { httpEquiv: 'X-UA-Compatible', content: 'IE=Edge' }
     ],
     link: [
       { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
@@ -29,6 +32,8 @@ export default {
     '@/plugins/elements',
     '@/plugins/global-components',
     '@/plugins/modal',
+    '@/plugins/moment',
+    '@/plugins/resize'
   ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
@@ -36,6 +41,7 @@ export default {
 
   // Modules for dev and build (recommended): https://go.nuxtjs.dev/config-modules
   buildModules: [
+    '@nuxtjs/router-extras',
   ],
 
   // Modules: https://go.nuxtjs.dev/config-modules
@@ -44,7 +50,8 @@ export default {
     '@nuxtjs/axios',
     // https://go.nuxtjs.dev/pwa
     '@nuxtjs/pwa',
-    'nuxt-sass-resources-loader',
+    '@nuxtjs/style-resources',
+    // 'nuxt-sass-resources-loader',
     '@nuxtjs/universal-storage',
     ['cookie-universal-nuxt', { alias: 'cookiz' }],
   ],
@@ -59,9 +66,19 @@ export default {
     initialState: { testParam: false }
   },
 
-  sassResources: [
-    '~assets/element-variables.scss'
-  ],
+  // sassResources: [
+  //   '~assets/constants.sass',
+  //   '~assets/element-variables.scss'
+  // ],
+
+  styleResources: {
+      scss: [
+        '~assets/element-variables.scss',
+      ],
+      sass: [
+          '~/assets/constants.sass',
+      ]
+  },
 
   
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
@@ -70,30 +87,14 @@ export default {
   },
 
   proxy: {
-    '/account': {
+    '/api/v1': {
       target: 'http://193.7.217.242:5000',
       changeOrigin: true
     },
-    '/resumes': {
+    '/videos': {
       target: 'http://193.7.217.242:5000',
       changeOrigin: true
-    },
-    '/profile': {
-      target: 'http://193.7.217.242:5000',
-      changeOrigin: true
-    },
-    '/vacancies': {
-      target: 'http://193.7.217.242:5000',
-      changeOrigin: true
-    },
-    '/place_of_work': {
-      target: 'http://193.7.217.242:5000',
-      changeOrigin: true
-    },
-    '/cities': {
-      target: 'http://193.7.217.242:5000',
-      changeOrigin: true
-    },
+    }
   },
 
   router: {

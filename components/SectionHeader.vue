@@ -1,23 +1,21 @@
 <template>
     <header class="header">
-        <div class="wrapper">
-            <div class="utp">
-                <h1 class="utp__title">
-                    <slot name="title"></slot>
-                </h1>
-                <span class="utp__subtitle">
-                    <slot name="subtitle"></slot>
-                </span>
-                <div class="handlers">
-                    <r-button>Добавить резюме</r-button>
-                    <change-role></change-role>
-                </div>
+        <div class="utp">
+            <h1 class="utp__title">
+                <slot name="title"></slot>
+            </h1>
+            <span class="utp__subtitle">
+                <slot name="subtitle"></slot>
+            </span>
+            <div class="handlers">
+                <r-button>Добавить резюме</r-button>
+                <change-role></change-role>
             </div>
-            <img
-            class="illustration"
-            :src="`/img/${imgname}.png`"
-            alt="main illustration">
         </div>
+        <img
+        class="illustration"
+        :src="`/img/${imgname}.png`"
+        alt="main illustration">
     </header>
 </template>
 
@@ -43,36 +41,57 @@ export default {
         height: 90vh
         width: 100%
         display: flex
+        flex-direction: column
+        justify-content: center
         position: relative
-        .wrapper
+        .utp
+            height: 100%
             display: flex
             flex-direction: column
             justify-content: center
-            position: relative
+            &__title
+                font-size: 60px
+                line-height: 80px
+                mark
+                    color: #346BF6
+                    background: transparent
+            &__subtitle
+                display: inline-block
+                padding: 24px 0 60px 0
+            .handlers
+                display: flex
+                align-items: center
+                button
+                    margin-right: 50px
+        .illustration
+            width: 50%
+            // height: 50%
+            // top: 13%
+            right: 0
+            position: absolute
+            object-fit: cover
+            z-index: -1
+
+    @media screen and (max-width: 1365px)
+        .illustration
+            display: none
+    
+    @media screen and (max-width: 1024px)
+        .header
+            height: auto
+            margin: 100px 0
             .utp
                 height: 100%
-                margin-top: -25px
+                margin-top: 0px
                 display: flex
                 flex-direction: column
                 justify-content: center
                 &__title
-                    font-size: 60px
-                    line-height: 80px
-                    mark
-                        color: #346BF6
-                        background: transparent
-                &__subtitle
-                    display: inline-block
-                    padding: 24px 0 60px 0
+                    font-size: 24px !important
+                    line-height: 40px !important
                 .handlers
-                    display: flex
-                    align-items: center
-                    button
-                        margin-right: 50px
-            .illustration
-                right: 0
-                position: absolute
-                object-fit: contain
-                z-index: -1
-
+                    flex-direction: column
+                    .el-button
+                        margin: 0 !important
+                        margin-bottom: 25px !important
 </style>

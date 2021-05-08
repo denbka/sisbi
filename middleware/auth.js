@@ -2,12 +2,12 @@ export default async ({ $axios, store, redirect, route, $cookiz }) => {
     if (!$cookiz.get('tempRole')) {
         const tempRole = route.name === 'index' ? 'applicant' : 'employer'
         $cookiz.set('tempRole', tempRole)
+        store.commit('SET_TEMP_ROLE', tempRole)
     } else {
+        if (route.path === '/') $cookiz.set('tempRole', 'applicant')
+        if (route.path === '/employer') $cookiz.set('tempRole', 'employer')
         store.commit('SET_TEMP_ROLE', $cookiz.get('tempRole'))
     }
-    if (route.path === '/') $cookiz.set('tempRole', 'applicant')
-    if (route.path === '/employer') $cookiz.set('tempRole', 'employer')
-    store.commit('SET_TEMP_ROLE', $cookiz.get('tempRole'))
 
 
     if (!store.state.access_token) {
@@ -15,7 +15,8 @@ export default async ({ $axios, store, redirect, route, $cookiz }) => {
             '/',
             '/employer',
             '/login',
-            '/register'
+            '/register',
+            '/about'
         ]
         if (whiteList.find(path => route.path === path)) return redirect()
         else {
@@ -27,13 +28,18 @@ export default async ({ $axios, store, redirect, route, $cookiz }) => {
         const whiteList = {
             applicant: [
                 '/applicant',
+                '/video',
+                '/microphone',
+                '/about'
             ],
             employer: [
-                '/employer'
+                '/employer',
+                '/video',
+                '/microphone',
+                '/about'
             ]
         }
         const { role } = store.state
-        console.log(role)
-        if (!whiteList[role].find(path => route.path.includes(path))) return redirect(`/${role}`)
+        if (role && !whiteList[role].find(path => route.path.includes(path))) return redirect(`/${role}`)
     }
 }

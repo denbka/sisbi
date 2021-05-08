@@ -86,4 +86,31 @@
                 flex: 0.2
                 &__item:first-child
                     margin-bottom: 50px
+
+    @media screen and (max-width: 1024px)
+        .footer
+            height: auto
+            .wrapper
+                padding: 25px
+        .footer-container
+            flex-direction: column
+            .title
+                margin-top: 25px
+            .items
+                margin-top: 10px !important
+            &__contacts
+                &__item:first-child
+                    margin-bottom: 0 !important
+    
+    @media screen and (max-width: 600px)
+        .footer-container
+            flex-direction: column
+            .title
+                margin-top: 25px
+            .items
+                margin-top: 10px !important
+            &__desc
+                p
+                    width: 100% !important
+
 </style>

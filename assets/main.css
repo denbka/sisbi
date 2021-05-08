@@ -5,6 +5,20 @@
   margin: 0;
 }
 
+@media screen and (max-width: 768px) {
+  * {
+    cursor: default !important;
+  }
+}
+
+/* .el-drawer__wrapper, .el-slider, .el-slider__runway, .el-slider__button-wrapper, .el-slider__bar, .el-tooltip__popper {
+  transition: none !important
+} */
+
+body {
+  padding: 0 !important
+}
+
 html {
     font-family: 'Arial', sans-serif;
     font-size: 16px;
@@ -14,11 +28,35 @@ html {
 button, input {
   outline: 0;
 }
+h1,h2,h3,h4,h5, .select-link {
+  color: #363848;
+  font-weight: bold;
+}
+
+a {
+  color: #363848;
+}
+
+h3 {
+  font-size: 36px;
+}
+
+h2 {
+  font-size: 28px;
+}
+
+h5 {
+  font-size: 18px;
+}
 
 .el-rate {
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+.el-select-dropdown__list .el-divider {
+  margin: 6px 0;
 }
 
 .el-rate__text {
@@ -45,6 +83,89 @@ button, input {
   display: flex;
   width: 100%;
   height: 100%;
-  color: #F05F3F;
+  color: #363848;
   text-decoration: none;
+}
+
+.search__button {
+  display: flex;
+  width: 300px;
+  height: 50px;
+  justify-content: center;
+  align-items: center;
+  color: #fff;
+  border-radius: 80px;
+  text-decoration: none;
+}
+
+textarea {
+  resize: none !important;
+}
+
+.el-input__inner:-webkit-autofill {
+    -webkit-box-shadow: inset 0 0 0 25px #fff !important;
+}
+
+.el-drawer__body {
+  overflow-y: auto;
+}
+
+.el-collapse-item__header {
+  height: 80px !important;
+}
+
+.el-collapse, .el-collapse-item, .el-collapse-item__header, .el-collapse-item__header.is-active {
+  border: none !important;
+  border-radius: 20px !important;
+}
+
+.el-collapse-item__wrap {
+  border: none !important;
+  border-bottom-left-radius: 20px !important;
+  border-bottom-right-radius: 20px !important;
+}
+
+.el-form-item__label {
+  font-weight: bold;
+  color: #363848 !important;
+}
+
+.bordering-button {
+  border: 2px solid #193FF6 !important;
+  border-radius: 4px !important;
+  color: #363848 !important;
+}
+
+.bordering-button:focus {
+  background: #193FF6;
+}
+
+@media screen and (max-width: 560px) {
+  .el-rate__text {
+    font-weight: normal;
+    font-size: 12px !important;
+  }
+  .el-rate__icon {
+    margin: 0 !important;
+    font-size: 14px !important;
+  }
+  .el-rate {
+    height: 15px !important;
+    margin-bottom: 25px
+  }
+
+  .el-collapse-item__header {
+    height: 48px !important;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .el-form-item {
+    flex-direction: column;
+  }
+
+  .el-form-item__label {
+    font-weight: bold;
+    font-size: 16px;
+  }
 }

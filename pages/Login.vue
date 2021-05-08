@@ -7,6 +7,11 @@
     </login-component>
 </template>
 
+<router>
+    meta:
+        name: 'Вход'
+</router>
+
 <script>
 import LoginComponent from '@/components/SectionLogin'
 export default {
@@ -24,10 +29,10 @@ export default {
     },
     methods: {
         async login(form) {
+            console.log(123)
             this.loading = true
             try {
                 await this.$store.dispatch('login', form)
-                this.$message.success('Вы успешно вошли в аккаунт!')
                 this.$router.push('/applicant')
             } catch(e) {
                 console.log(e.message)

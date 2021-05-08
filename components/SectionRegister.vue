@@ -1,5 +1,5 @@
 <template>
-    <div class="register">
+    <div class="login-page">
         <div class="wrapper">
             <h3 class="title">Начните с простой регистрации</h3>
             <div class="form-container">
@@ -15,6 +15,7 @@
                     </el-form-item>
                     <el-form-item>
                         <el-button
+                        type="primary"
                         :loading="loading"
                         :disabled="loading"
                         @click="$emit('submit', step, mainForm)">
@@ -33,6 +34,7 @@
                     </el-form-item>
                     <el-form-item>
                         <el-button
+                        type="primary"
                         :loading="loading"
                         :disabled="loading"
                         @click="$emit('submit', step, confirmForm)">
@@ -58,6 +60,7 @@
                     </el-form-item>
                     <el-form-item>
                         <el-button
+                        type="primary"
                         :loading="loading"
                         :disabled="loading"
                         @click="$emit('submit', step, additionalForm)">

@@ -2,11 +2,13 @@
     <div class="video-container">
         <input class="invisible" type="file" accept="video/*;capture=camcorder">
         <input class="invisible" type="file" accept="audio/*;capture=microphone">
+        <!-- http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/SubaruOutbackOnStreetAndDirt.mp4 -->
         <video
-        src="http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/SubaruOutbackOnStreetAndDirt.mp4"
-        ref="player">
-        </video>
-        <div id="video-controls" class="controls" data-state="hidden">
+        autoplay
+        :src="videoSrc ? videoSrc : null"
+        ref="player"></video>
+        <!-- <video v-else controls :src="videoSrc ? videoSrc : null"></video> -->
+        <div v-if="!isRecord" id="video-controls" class="controls" data-state="hidden">
             <div class="progress" ref="progress" @click="onChangeProgress">
                 <span class="progress__bar" ref="progressBar"></span>
             </div>
@@ -45,12 +47,29 @@
         // :srcObject.prop="stream"
 
 export default {
+    props: {
+        isRecord: {
+            type: Boolean,
+            required: true
+        },
+        recordingState: {
+            type: String,
+            required: false
+        },
+        videoSrc: {
+            type: String,
+            required: false
+        }
+    },
     data() {
         return {
             stream: null,
             recorder: null,
             chunks: [],
-            isPause: true
+            isPause: true,
+            blob: null,
+            url: null,
+            isMobile: false,
         }
     },
     methods: {
@@ -105,49 +124,146 @@ export default {
                 if (player.currentTime - rewind >= 0) player.currentTime -= rewind
                 else player.currentTime = 0
             }
+        },
+        dataURLtoFile(dataurl, filename) {
+            let arr = dataurl.split(','),
+                mime = arr[0].match(/:(.*?);/)[1],
+                bstr = atob(arr[1]), 
+                n = bstr.length, 
+                u8arr = new Uint8Array(n)
+                
+            while(n--){
+                u8arr[n] = bstr.charCodeAt(n)
+            }
             
+            return new File([u8arr], filename, {type:mime})
+        },
+        blobToFile(theBlob, fileName) {
+            //A Blob() is almost a File() - it's just missing the two properties below which we will add
+            theBlob.lastModifiedDate = new Date();
+            theBlob.name = fileName;
+            return theBlob;
+        },
+        playRecording() {
+            this.recorder.start()
+        },
+        pauseRecording() {
+            this.recorder.stop()
+        },
+        async finishRecording() {
+            const { player } = this.$refs
+            this.recorder.onstop = async e => {
+                console.log('finished')
+        
+                this.blob = new Blob(this.chunks, { type: 'video/mp4' })
+                console.log(this.chunks)
+                this.url = window.URL.createObjectURL(this.blob)
+                console.log(this.url)
+                // this.url = this.dataURLtoFile(this.url, 'test.mp4')
+                this.$emit('save-video', this.blobToFile(this.blob, "video.mp4"))
+                // this.url = window.URL.createObjectURL(this.blobToFile(this.blob, "video.mp4"))
+                console.log(this.url)
+                // const a = document.createElement('a')
+                // a.download = '123.mp4'
+                // a.href = this.url
+                // a.click()
+                await this.init()
+                player.src = this.url
+                player.srcObject = null
+            }
+            if (this.recorder.state !== 'inactive') {
+                this.pauseRecording()
+            }
+            this.recorder.onStop = () => {
+                return
+            }
+        },
+        resetRecording() {
+            const { player } = this.$refs
+            this.$emit('change-record')
+            player.src = null
+            player.srcObject = this.stream
+            this.chunks = []
+            if (this.recorder.state !== 'inactive') {
+                this.pauseRecording()
+            }
+            this.recorder.onStop = () => {
+                return
+            }
+        },
+        // mobileCheck() {
+        //     const toMatch = [
+        //         /Android/i,
+        //         /webOS/i,
+        //         /iPhone/i,
+        //         /iPad/i,
+        //         /iPod/i,
+        //         /BlackBerry/i,
+        //         /Windows Phone/i
+        //     ]
+
+        //     return toMatch.some((toMatchItem) => {
+        //         return navigator.userAgent.match(toMatchItem)
+        //     })
+        // },
+        async init() {
+            // if (!this.mobileCheck()) {
+            //     console.log(this.mobileCheck(), 123)
+            //     this.isMobile = true
+            //     return
+            // }
+            const { player, progress, progressBar, volumeBar } = this.$refs
+            if (!this.isRecord) {
+                player.addEventListener('timeupdate', function() {
+                // For mobile browsers, ensure that the progress element's max attribute is set
+                // if (!progress.getAttribute('max')) progress.setAttribute('max', player.duration);
+                progress.value = player.currentTime;
+                progressBar.style.width = Math.floor((player.currentTime / player.duration) * 100) + '%';
+                });
+                progressBar.style.width = 0
+                volumeBar.style.width = 0
+            } else {
+                const constraints = {
+                    audio: true,
+                    video: { width: 1280, height: 720 }
+                }
+                const handleDataAvailable = (event) => {
+                    console.log(event)
+                    this.chunks.push(event.data)
+                }
+                this.stream = await navigator.mediaDevices.getUserMedia(constraints)
+                player.srcObject = this.stream
+                this.recorder = new MediaRecorder(this.stream)
+                this.recorder.ondataavailable = handleDataAvailable
+            }
+        }
+    },
+    watch: {
+        recordingState(value) {
+            console.log(value)
+            switch (value) {
+                case 'recording': return this.playRecording()
+                case 'stop': return this.pauseRecording()
+                case 'finish': return this.finishRecording()
+                case 'reset': return this.resetRecording()
+            }
         }
     },
     async mounted() {
-        const { player, progress, progressBar, volumeBar } = this.$refs
-        player.addEventListener('timeupdate', function() {
-        // For mobile browsers, ensure that the progress element's max attribute is set
-        // if (!progress.getAttribute('max')) progress.setAttribute('max', player.duration);
-        progress.value = player.currentTime;
-        progressBar.style.width = Math.floor((player.currentTime / player.duration) * 100) + '%';
-   		});
-        progressBar.style.width = 0
-        volumeBar.style.width = 0
-        return
-        const constraints = {
-            audio: true,
-            video: { width: 1280, height: 720 }
-        }
-        const handleDataAvailable = (event) => {
-            this.chunks.push(event.data)
-        }
-        this.stream = await navigator.mediaDevices.getUserMedia(constraints)
-        this.recorder = new MediaRecorder(this.stream)
-        this.recorder.ondataavailable = handleDataAvailable
-        this.recorder.start()
-        this.recorder.onstop = async e => {
-            console.log('213 stopped')
-            const blob = new Blob(this.chunks, { type: 'video/mp4' })
-            console.log(blob)
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a')
-            a.href = url
-            a.download = '123.mp4'
-            a.click()
-        }
+        await this.init()
     }
 }
 </script>
 
 <style lang="sass" scoped>
+    video::-webkit-media-controls-panel
+        display: none !important
+        opacity: 1 !important
     .video-container
         position: relative
         height: 450px
+        width: 100%
+        background: #000
         .controls
             width: 100%
             position: absolute
@@ -213,6 +329,7 @@ export default {
                         top: -4px
                         background: #F05F3F
     video
+        transform: rotateY(180deg)
         width: 100%
         height: 100%
     button
@@ -224,4 +341,7 @@ export default {
             width: 20px
             height: 20px
             fill: #fff
+    @media screen and (max-width: 1024px)
+        .video-container
+            height: auto
 </style>

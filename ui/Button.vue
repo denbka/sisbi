@@ -1,5 +1,6 @@
 <template>
     <el-button
+    @click="$emit('click')"
     :class="`r-button r-button--${type}`"
     :type="type">
         <slot></slot>
@@ -21,7 +22,7 @@ export default {
 <style lang="sass">
     .r-button
         border-radius: 100px
-        width: 255px
+        padding: 0 50px
         height: 60px
         font-size: 18px
         &--info
@@ -30,4 +31,9 @@ export default {
             font-weight: bold
             &:hover
                 color: #363848
+    // @media screen and (max-width: 768px)
+    //     .r-button
+    //         margin-bottom: 25px
+    //         &:last-child
+    //             margin-bottom: 0
 </style>

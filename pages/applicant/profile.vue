@@ -1,36 +1,38 @@
 <template>
-    <div class="profile">
-        <div class="wrapper">
-            <applicant-nav></applicant-nav>
-            <div class="profile-content">
-                <div class="main">
-                    <el-avatar
-                    :size="232"
-                    src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png">
-                    </el-avatar>
-                    <span>{{getFullName}}</span>
-                </div>
-                <profile-form
-                @handleChange="handleChange"
-                @onDisabled="onDisabled"
-                :user="user"
-                :fields="fields">
-                </profile-form>
-            </div>
+    <profile-wrapper>
+        <div class="main">
+            <el-avatar
+            :size="232"
+            src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png">
+            </el-avatar>
+            <span v-if="this.storeUser.first_name">{{getFullName}}</span>
         </div>
-    </div>
+        <profile-form
+        @handleChange="handleChange"
+        @onDisabled="onDisabled"
+        :user="user"
+        :fields="fields">
+        </profile-form>
+    </profile-wrapper>
 </template>
+
+<router>
+    meta:
+        name: 'Профиль'
+</router>
 
 <script>
 import ApplicantNav from '@/components/applicant/Navigation'
 import ProfileForm from '@/components/applicant/profile/form'
+import ProfileWrapper from '@/components/applicant/profile/profileWrapper'
 import { mapState } from 'vuex'
 import { formItems } from '@/helpers'
 import moment from 'moment'
 export default {
     components: {
         ApplicantNav,
-        ProfileForm
+        ProfileForm,
+        ProfileWrapper
     },
     computed: {
         getFullName() {
@@ -120,7 +122,7 @@ export default {
 }
 </script>
 
-<style lang="sass" scoped>
+<style lang="sass">
     .profile
         background: #f9f9f9
         min-height: 90vh

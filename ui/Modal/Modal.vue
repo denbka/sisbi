@@ -68,7 +68,8 @@ export default {
     visible: false,
     buttons: [],
     message: '',
-    title: ''
+    title: '',
+    form: null
   }),
   beforeMount() {
     this.$modal.sub.$on('toggle', this.onToggle)
@@ -82,7 +83,8 @@ export default {
         document.body.style.overflowY = 'auto'
       }
     },
-    onToggle({ dialogName, visible, message, title, buttons }) {
+    onToggle({ form, dialogName, visible, message, title, buttons }) {
+      if (form) this.form = form
       if (buttons) this.buttons = buttons
       if (title) this.title = title
       if (message) this.message = message
@@ -110,6 +112,7 @@ export default {
     height: 100vh;
     background: rgba(0, 0, 0, 0.5);
     display: flex;
+    z-index: 10000;
   }
   .dialog-container {
     display: flex;
@@ -155,10 +158,10 @@ export default {
       font-size: 8vw;
     }
   }
-  @media (max-width: 750px) {
+  @media (max-width: 900px) {
     .dialog-container--adaptive {
       width: 90vw !important;
-      height: 70vh !important;
+      height: 90vh !important;
     }
   }
 </style>

@@ -8,14 +8,16 @@
             <div class="header__item">
                 <span class="company-name">{{data.companyName}}</span>
                 <el-rate
-                v-model="data.rating"
+                :value="data.rating"
                 disabled
                 show-score
                 score-template="{value}">
                 </el-rate>
             </div>
         </div>
-        <video-component>
+        <video-component
+        :videoSrc="data.video"
+        :isRecord="false">
         </video-component>
         <div class="footer">
             <div class="footer__description">
@@ -38,10 +40,7 @@
                     </div>
                 </div>
                 <p>
-                    Мы – студия дизайна интерьеров. А также мы подбираем и закупаем мебель и материалы,
-                    делаем ремонт и согласовываем любые инженерные проекты.
-                    Мы создаем дизайн интерьеров с 2005 года и за это время
-                    наш опыт составляет более 500 реализованных проектов.
+                    {{data.description}}
                 </p>
             </div>
             <div class="footer__contacts">
@@ -51,12 +50,31 @@
                         <i class="el-icon-phone"></i>
                     </div>
                     <div class="footer__contacts__contact--contacts">
+                        <span
+                        v-if="!openContacts"
+                        class="footer__contacts__contact--contacts--show-contacts">
+                            Показать контакты
+                        </span>
+                        <div
+                        v-else
+                        class="footer__contacts__contact--contacts--showed-contacts">
 
+                        </div>
                     </div>
                 </div>
                 <div class="footer__contacts__handlers">
-                    <el-button>Отправить резюме</el-button>
-                    <el-button type="primary">Откликнуться</el-button>
+                    <el-button
+                    v-if="role === 'applicant'"
+                    type="info"
+                    class="bordering-button">
+                        Отправить резюме
+                    </el-button>
+                    <el-button
+                    v-if="role === 'employer' && !data.response"
+                    @click.stop="onResponse(data)"
+                    class="card__on-response-button">
+                        {{data.response ? 'Вы уже откликнулись' : 'Откликнуться'}}
+                    </el-button>
                 </div>
             </div>
         </div>
@@ -70,9 +88,29 @@ export default {
     components: {
         VideoComponent,
     },
+    props: {
+        onResponse: {
+            type: Function,
+            required: false
+        }
+    },
+    data: () => ({
+        openContacts: false
+    }),
+    mounted() {
+        console.log(this.data)
+    },
+    methods: {
+        onOpenContacts() {
+            this.$store.dispatch('getEntities', {
+                entityName: ''
+            })
+        }
+    },
     computed: {
         ...mapState({
-            data: state => state.tempForm
+            data: state => state.tempForm,
+            role: state => state.role
         })
     }
 }
@@ -87,7 +125,6 @@ export default {
         margin-bottom: 10px
         h3
             font-size: 24px
-            color: #363848
         .company-name
             font-weight: bold
             color: #636363
@@ -96,7 +133,7 @@ export default {
             justify-content: space-between
     .footer
         margin-top: 20px
-        height: 150%
+        height: 100%
         display: flex
         &__description
             flex: 0.7
@@ -137,6 +174,8 @@ export default {
                     display: flex
                     justify-content: space-between
                     align-items: center
+                &--contacts
+                    padding: 10px
             &__handlers
                 flex: 0.3
                 display: flex
@@ -145,4 +184,44 @@ export default {
                     margin: 0
                 button:last-child
                     margin-top: 10px
+    .card__on-response-button
+        color: #fff
+    @media screen and (max-width: 900px)
+        .card-form
+            width: auto
+            .footer
+                flex-direction: column
+                height: auto !important
+                padding-bottom: 25px
+                &__contacts
+                    &__handlers
+                        flex-direction: row
+                        button
+                            width: 50%
+                            margin: 0
+                        button:last-child
+                            margin-left: 15px
+                &__description
+                    flex: 0
+                    margin-bottom: 25px
+                    
+                    &--info
+                        flex-direction: column
+                        width: 100%
+                        &__item
+                            width: 100%
+
+    @media screen and (max-width: 900px)
+        .card-form
+            width: auto
+            .footer
+                &__contacts
+                    &__handlers
+                        flex-direction: column
+                        button
+                            width: 100%
+                            margin: 0 !important
+
+                        button:last-child
+                            margin-top: 15px !important
 </style>

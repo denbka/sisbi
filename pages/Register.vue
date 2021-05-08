@@ -18,7 +18,7 @@ export default {
     },
     data: () => ({
         mainForm: {
-            phone: 'deniskindo@mail.ru'
+            phone: ''
         },
         confirmForm: {
             code: ''
@@ -30,13 +30,18 @@ export default {
         loading: false,
         step: 'enter'
     }),
+    computed: {
+        getRole() {
+            return this.$cookiz.get('tempRole') === 'applicant' ? 'Worker' : 'Employer'
+        }
+    },
     methods: {
         async submit(step, form) {
             this.loading = true
             try {
                 await this.$store.dispatch('register', {
                     step,
-                    form: {...form, phone: this.mainForm.phone, role: 'worker' }
+                    form: {...form, phone: this.mainForm.phone, role: this.getRole }
                 })
                 switch (step) {
                     case 'enter': {
@@ -48,7 +53,6 @@ export default {
                         return
                     }
                     default: {
-                        this.$message.success('Вы успешно прошли регистрацию!')
                         this.$router.push('/worker')
                     }
                 }

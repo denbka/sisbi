@@ -3,45 +3,62 @@ export const state = () => ({
     refresh_token: null,
     user: null,
     role: null,
-    tempRole: null,
-    tempForm: {
-        id: 1,
-        title: 'Дизайнер интерьера',
-        companyName: 'Auslogics Labs',
-        rating: 4.3,
-        experience: '1-3 года',
-        schedule: '5/2, с 9-00 до 18-00',
-        salary: '20 000 - 30 000',
-        dateCreate: '03.05.2021',
+    tempRole: 'applicant',
+    tempForm: null,
+    vacancies: {
+        data: []
     },
-    vacancies: [],
-    cities: [],
-    // vacancies: [
-    //     {
-    //         id: 1,
-    //         title: 'Дизайнер интерьера',
-    //         companyName: 'Auslogics Labs',
-    //         rating: 4.3,
-    //         experience: '1-3 года',
-    //         schedule: '5/2, с 9-00 до 18-00',
-    //         salary: '20 000 - 30 000',
-    //         dateCreate: '03.05.2021'
-    //     },
-    // ]
+    cities: {
+        data: []
+    },
+    responses: {
+        data: []
+    },
+    resumes: null,
+    view: 'row',
+    limitPagination: 10,
+    listLoading: true,
+    vacancyResponses: {
+        data: []
+    },
+    resumeResponses: []
 })
 
-export const getters = () => ({
-    // auth: state => {
-    //     return Boolean(user
-    // }
-})
+export const getters = {
+    // id: "a0147381-fa66-4b52-87d1-a50e3b387086"
+    // resume: Object
+    // sender: "Employer"
+    // status: "bad_status"
+    // vacancy: Object
+    resumesWithResponses: state => {
+        const { resumes, responses } = state
+        console.log(responses)
+        return {
+            ...resumes,
+            data: resumes.data.map(resume => {
+                return {
+                    ...resume,
+                    response: responses.data.find(response => response.resume.id === resume.id)
+                }
+            })
+        }
+    },
+}
 
 export const mutations = {
+    SET_VIEW: (state, data) => {
+        state.view = data
+    },
     SET_TOKENS: (state, data) => {
-        state.access_token = data.access_token
-        state.refresh_token = data.refresh_token
+        state.access_token = data ? data.access_token : null
+        state.refresh_token = data ? data.refresh_token : null
     },
     SET_USER_INFO: (state, data) => {
+        if (!data) {
+            state.user = null
+            state.role = null
+            return
+        }
         state.user = {
             ...data,
             role: data.role === 'Worker' ? 'applicant' : 'employer'
@@ -54,9 +71,10 @@ export const mutations = {
     SET_ITEMS: (state, { entityName, response }) => {
         state[entityName] = response
     },
-    increment: (state) => {
-        state.count++
-    },
+    SET_VACANCY_RESPONSES: (state, vacancy_id) => {
+        const { responses, vacancyResponses } = state
+        vacancyResponses.data = responses.data.filter(response => response.vacancy.id === vacancy_id)
+    }
 }
 
 export const actions = {
@@ -70,11 +88,10 @@ export const actions = {
         }
     },
     async refreshToken({ state, commit }) {
-        const { access_token, refresh_token } = state
         try {
             const response = await this.$axios.$post('/account/refresh_token', {
-                token: access_token,
-                refresh_token
+                token: this.$cookiz.get('access_token'),
+                refresh_token: this.$cookiz.get('refresh_token')
             })
             console.log('refreshToken')
             this.$cookiz.set('access_token', response.access_token)
@@ -107,32 +124,46 @@ export const actions = {
             console.log(e)
         }
     },
-    async register({commit}, {
+    logout({ commit }) {
+        this.$cookiz.remove('access_token')
+        this.$cookiz.remove('refresh_token')
+        commit('SET_USER_INFO', null)
+        commit('SET_TOKENS', null)
+    },
+    async register({commit, dispatch}, {
         step,
         form
     }) {
         try {
             switch (step) {
                 case 'enter': {
-                    await this.$axios.post('/account/otp/send', {
+                    await this.$axios.$post('/account/otp/send', {
                         login: form.phone,
                         type: 'SignUp'
                     })
                     return
                 }
                 case 'confirm': {
-                    await this.$axios.post('/account/otp/confirm', {
+                    await this.$axios.$post('/account/otp/confirm', {
                         login: form.phone,
                         otp: Number(form.code)
                     })
                     return
                 }
                 case 'additional': {
-                    await this.$axios.post('/account/signup', {
-                        login: form.phone,
-                        password: form.password,
-                        role: form.role
-                    })
+                    try {
+                        const response = await this.$axios.$post('/account/signup', {
+                            login: form.phone,
+                            password: form.password,
+                            role: form.role
+                        })
+                        commit('SET_TOKENS', response)
+                        this.$cookiz.set('access_token', response.access_token)
+                        this.$cookiz.set('refresh_token', response.refresh_token)
+                        await dispatch('getUserInfo')
+                    } catch(e) {
+                        console.log(e)
+                    }
                     return
                 }
             }
@@ -141,21 +172,34 @@ export const actions = {
             throw new Error(e)
         }
     },
-    async getEntities({ commit }, { entityName, $axios = null, params = {} }) {
+    async getEntities({ commit }, { entityName, $axios, stateName, params }) {
+        commit('SET_ITEMS', {
+            entityName: 'listLoading',
+            response: true
+        })
         try {
             let response
             if ($axios) {
-                response = await $axios.$get(`/${entityName}`, params)
+                response = await $axios.$get(`/${entityName}`, {
+                    params
+                })
             } else {
-                response = await this.$axios.$get(`/${entityName}`, params)
+                response = await this.$axios.$get(`/${entityName}`, {
+                    params
+                })
             }
             commit('SET_ITEMS', {
-                entityName,
-                response: response.data
+                entityName: stateName ? stateName : entityName,
+                response
             })
         } catch(e) {
             console.log(e)
             throw new Error(e)
+        } finally {
+            commit('SET_ITEMS', {
+                entityName: 'listLoading',
+                response: false
+            })
         }
     },
     async saveEntity({ commit }, { entityName, data, method }) {

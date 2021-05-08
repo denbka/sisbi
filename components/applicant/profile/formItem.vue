@@ -10,17 +10,25 @@
         @keydown.enter="$emit('handleChange')"
         :placeholder="field.title"
         class="form-input">
-        <span
-        v-if="field.disabled"
-        @click="$emit('onDisabled')"
-        class="change">
-            Изменить
-        </span>
+        <div v-if="field.id !== 'password' && field.id !== 'phone' && field.id !== 'email'">
+            <span
+            v-if="field.disabled"
+            @click="$emit('onDisabled')"
+            class="change">
+                Изменить
+            </span>
+            <span
+            v-else
+            @click="$emit('handleChange')"
+            class="change">
+                Сохранить
+            </span>
+        </div>
         <span
         v-else
-        @click="$emit('handleChange')"
+        @click="$modal.show('profile-modal', field.id)"
         class="change">
-            Сохранить
+            Изменить
         </span>
     </div>
 </el-form-item>
