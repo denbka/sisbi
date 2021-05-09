@@ -46,8 +46,16 @@ export default {
                     padding-left: 15px
                     border: 1px solid #C2C2C2
                     border-radius: 60px
+                .el-select
+                    width: 169px
+                    input
+                        color: #636363 !important
+                        border: 1px solid #C2C2C2 !important
+                    input:disabled
+                        background: #FBFBFB !important
                 .title
                     font-weight: bold
+                    min-width: 200px
                 .change
                     text-decoration: underline
                     margin-left: 30px
@@ -59,4 +67,25 @@ export default {
                 &::before, &::after
                     display: none
                     content: ''
+    @media screen and (max-width: 580px)
+        .profile-form
+            width: 100%
+        .el-form-item
+            &__content
+                flex-direction: row
+                flex-wrap: wrap
+                width: 100% !important
+                .title
+                    order: 0
+                    width: 50%
+                .form-input
+                    order: 2
+                    width: 100%
+                    height: 40px !important
+                .el-select
+                    order: 2
+                    width: 100% !important
+                .change
+                    order: 1
+                    width: 50%
 </style>

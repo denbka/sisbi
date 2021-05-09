@@ -182,5 +182,7 @@ export default {
             &__info
                 h4
                     font-size: 18px
+            &__on-response-button
+                width: 60%
 
 </style>

@@ -8,6 +8,10 @@ export const formItems = [
         id: 'second_name',
     },
     {
+        title: 'Компания',
+        id: 'company'
+    },
+    {
         title: 'Email',
         id: 'email',
     },

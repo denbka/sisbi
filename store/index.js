@@ -119,6 +119,7 @@ export const actions = {
             let response
             if ($axios) response = await $axios.$get('/profile')
             else response = await this.$axios.$get('/profile')
+            console.log(response)
             commit('SET_USER_INFO', response)
         } catch(e) {
             console.log(e)
@@ -215,6 +216,7 @@ export const actions = {
         let user = JSON.parse(JSON.stringify(obj))
         const userArray = Object.entries(user)
         const fields = formItems.map(form => {
+            if (form.id === 'company' && user.role !== 'employer') return
             if (userArray.some(item => item[0] === form.id)) {
                 const userProp = userArray.find(item => item[0] === form.id)
                 return {
@@ -226,13 +228,13 @@ export const actions = {
                 }
             }
             return {
-                    id: form.id,
-                    value: null,
-                    title: form.title,
-                    disabled: true,
-                    type: form.id
-                }
-        })
+                id: form.id,
+                value: null,
+                title: form.title,
+                disabled: true,
+                type: form.id
+            }
+        }).filter(item => item !== undefined)
         return { fields, user }
     }
 }

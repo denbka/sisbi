@@ -61,6 +61,12 @@ export default {
                 margin: 50px 25px
                 background: transparent
                 box-shadow: none
+            &-content
+                flex-direction: column
+                align-items: center
+                .main
+                    margin: 0 auto
+                    margin-bottom: 50px
         .profile-nav
             display: none
 
