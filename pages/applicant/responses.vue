@@ -4,7 +4,7 @@
             <carousel-cards
             :tooltips="['edit']"
             :role="role"
-            :items="vacancies">
+            :items="resumes">
             </carousel-cards>
             <div class="responses__offers">
                 <!-- <Sorts
@@ -47,13 +47,12 @@ export default {
         CarouselCards
     },
     computed: {
-        ...mapState(['user', 'vacancies', 'responses']),
+        ...mapState(['user', 'resumes', 'responses']),
     },
     methods: {
         async onVerdict(role, response_id, type) {
             try {
-                const response = await this.$axios.$post(`/profile/responses/${response_id}/${type}`)
-                console.log(response)
+                return await this.$axios.$post(`/profile/responses/${response_id}/${type}`)
             } catch(e) {
                 console.log(e)
             }
@@ -71,13 +70,13 @@ export default {
         const role = store.state.role
         try {
             await store.dispatch('getEntities', {
-                entityName: 'profile/vacancies',
-                stateName: 'vacancies'
+                entityName: 'profile/resumes',
+                stateName: 'resumes'
             })
 
             const response = await $axios.$get('/profile/responses', {
                 params: {
-                    vacancy_id: store.state.vacancies.data[0].id
+                    resume_id: store.state.resumes.data[0].id
                 }
             })
             store.commit('SET_ITEMS', {

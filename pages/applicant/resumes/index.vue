@@ -5,6 +5,7 @@
                 <nuxt-link class="add-resume" to="/applicant/resumes/create">Добавить резюме</nuxt-link>
             </div>
             <component-list
+            :tooltips="['edit']"
             :data="resumes">
             </component-list>
         </div>

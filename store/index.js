@@ -14,14 +14,13 @@ export const state = () => ({
     responses: {
         data: []
     },
-    resumes: null,
+    resumes: {
+        data: []
+    },
     view: 'row',
     limitPagination: 10,
     listLoading: true,
-    vacancyResponses: {
-        data: []
-    },
-    resumeResponses: []
+    actionForm: null
 })
 
 export const getters = {
@@ -35,12 +34,12 @@ export const getters = {
         console.log(responses)
         return {
             ...resumes,
-            data: resumes.data.map(resume => {
+            data: resumes.data ? resumes.data.map(resume => {
                 return {
                     ...resume,
                     response: responses.data.find(response => response.resume.id === resume.id)
                 }
-            })
+            }) : []
         }
     },
 }
@@ -173,7 +172,49 @@ export const actions = {
             throw new Error(e)
         }
     },
-    async getEntities({ commit }, { entityName, $axios, stateName, params }) {
+    async recovery({commit, dispatch}, {
+        step,
+        form
+    }) {
+        try {
+            switch (step) {
+                case 'enter': {
+                    await this.$axios.$post('/account/password/change', {
+                        login: form.phone,
+                        type: 'SignUp'
+                    })
+                    return
+                }
+                case 'confirm': {
+                    await this.$axios.$post('/account/otp/confirm', {
+                        login: form.phone,
+                        otp: Number(form.code)
+                    })
+                    return
+                }
+                case 'additional': {
+                    try {
+                        const response = await this.$axios.$post('/account/password/restore', {
+                            login: form.phone,
+                            password: form.password,
+                            role: form.role
+                        })
+                        commit('SET_TOKENS', response)
+                        this.$cookiz.set('access_token', response.access_token)
+                        this.$cookiz.set('refresh_token', response.refresh_token)
+                        await dispatch('getUserInfo')
+                    } catch(e) {
+                        console.log(e)
+                    }
+                    return
+                }
+            }
+        } catch(e) {
+            console.log('store error: ', e)
+            throw new Error(e)
+        }
+    },
+    async getEntities({ commit }, { entityName, $axios, stateName, params, id, inStore = true }) {
         commit('SET_ITEMS', {
             entityName: 'listLoading',
             response: true
@@ -181,18 +222,19 @@ export const actions = {
         try {
             let response
             if ($axios) {
-                response = await $axios.$get(`/${entityName}`, {
+                response = await $axios.$get(!id ? `/${entityName}` : `/${entityName}/${id}`, {
                     params
                 })
             } else {
-                response = await this.$axios.$get(`/${entityName}`, {
+                response = await this.$axios.$get(!id ? `/${entityName}` : `/${entityName}/${id}`, {
                     params
                 })
             }
-            commit('SET_ITEMS', {
+            if (inStore) commit('SET_ITEMS', {
                 entityName: stateName ? stateName : entityName,
                 response
             })
+            return response
         } catch(e) {
             console.log(e)
             throw new Error(e)
@@ -203,13 +245,25 @@ export const actions = {
             })
         }
     },
-    async saveEntity({ commit }, { entityName, data, method }) {
+    async saveEntity({ commit }, { entityName, data, method, inStore = true, id }) {
         try {
-            const response = await this.$axios[`$${method}`](`/${entityName}`, data)
-            commit('SET_USER_INFO', response)
+            const response = await this.$axios[`$${method}`](!id ? `/${entityName}` : `/${entityName}/${id}`, data)
+            if (inStore) commit('SET_ITEMS', {
+                entityName,
+                response
+            })
             return response
         } catch(e) {
-            console.log(e.message)
+            // console.log(e.data)
+            throw new Error(e)
+        }
+    },
+    async removeEntity({commit}, { entityName, id }) {
+        try {
+            await this.$axios.$delete(!id ? `/${entityName}` : `/${entityName}/${id}`)
+        } catch(e) {
+            // console.log(e.data)
+            throw new Error(e)
         }
     },
     renderObjToArray({}, { obj, formItems }) {

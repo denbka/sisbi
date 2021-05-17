@@ -45,42 +45,53 @@ export default {
 
 <style lang="sass">
 .root[data-role='employer']
-  .el-slider__bar
+  .el-slider__bar, .carousel-wrapper__handlers button
     background: $primaryColorEmployer
   .el-button--primary, .el-slider__button
     border-color: $primaryColorEmployer
-  .el-button, .r-button, .search__button, .card__on-response-button, .icon-container--active
+  .el-button--primary, .r-button, .search__button, .card__on-response-button, .icon-container--active
     cursor: pointer !important
     background: $primaryColorEmployer !important
-  .r-button--disabled, .search__button:disabled, .card__on-response-button:disabled
+    color: #fff
+  .r-button--disabled, .search__button:disabled, .card__on-response-button:disabled, .el-button:disabled
     cursor: not-allowed !important
     background: $disabledColorEmployer !important
     color: #fff
   .nav-active
     color: $primaryColorEmployer !important
   .el-button--info
-    background: transparent
+    background: transparent !important
     color: $primaryColorEmployer
     border: none
+  .footer__contacts__contact--contacts--showed-contacts__item i
+    color: $primaryColorEmployer
+  .bordering-button
+    border-color: $primaryColorEmployer !important
 
 .root[data-role='applicant']
-  .el-slider__bar
+  .el-slider__bar, .carousel-wrapper__handlers button
     background: $primaryColorApplicant
   .el-button--primary, .el-slider__button
     border-color: $primaryColorApplicant
-  .el-button, .r-button, .search__button, .card__on-response-button
+  .el-button--primary, .r-button, .search__button, .card__on-response-button
     cursor: pointer !important
-    background: $primaryColorApplicant
-  .r-button--disabled, .r-button--info, .search__button:disabled, .card__on-response-button:disabled
+    background: $primaryColorApplicant !important
+    color: #fff !important
+  .r-button--disabled, .r-button--info, .search__button:disabled, .card__on-response-button:disabled, .el-button:disabled
     cursor: not-allowed !important
-    background: $disabledColorApplicant
+    background: $disabledColorApplicant !important
     color: #fff
   .nav-active
     color: $primaryColorApplicant !important
   .el-button--info
-    background: transparent
-    color: $primaryColorApplicant
+    background: transparent !important
+    color: $primaryColorApplicant !important
     border: none
+  .footer__contacts__contact--contacts--showed-contacts__item i
+    color: $primaryColorApplicant
+  .bordering-button
+    border-color: $primaryColorApplicant !important
+
 // .el-button--default
 //   background: transparent !important
   

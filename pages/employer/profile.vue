@@ -1,11 +1,22 @@
 <template>
     <profile-wrapper>
         <div class="main">
-            <el-avatar
-            :size="232"
-            src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png">
-            </el-avatar>
-            <span>{{getFullName}}</span>
+            <div>
+                <Avatar
+                :avatarSrc="user.avatar"
+                />
+                <span class="main__fullname">
+                    {{getFullName}}
+                </span>
+            </div>
+            <div class="location">
+                <div class="location__icon">
+                    <i class="el-icon-location"></i> 
+                </div>
+                <div class="location__info">
+                    <span>{{user.address}}</span>
+                </div>
+            </div>
         </div>
         <profile-form
         @handleChange="handleChange"
@@ -23,6 +34,7 @@
 
 
 <script>
+import Avatar from '@/components/ComponentAvatar'
 import ApplicantNav from '@/components/applicant/Navigation'
 import ProfileForm from '@/components/applicant/profile/form'
 import ProfileWrapper from '@/components/applicant/profile/profileWrapper'
@@ -33,7 +45,8 @@ export default {
     components: {
         ApplicantNav,
         ProfileForm,
-        ProfileWrapper
+        ProfileWrapper,
+        Avatar
     },
     computed: {
         getFullName() {
@@ -131,12 +144,28 @@ export default {
         &-content
             display: flex
             .main
-                display: flex
-                flex-direction: column
-                margin-right: 100px
-                align-items: center
+                margin-right: 80px
+                text-align: center
+                &__fullname
+                    display: block
+                    margin-top: 25px
                 .el-avatar
                     margin-bottom: 30px
+                .location
+                    margin-top: 50px
+                    display: flex
+                    align-items: center
+                    &__icon
+                        display: flex
+                        background: #ECECEC
+                        padding: 8px
+                        border-radius: 5px
+                        i
+                            color: #808080
+                    &__info
+                        font-size: 14px
+                        font-weight: normal
+                        margin-left: 10px
         .wrapper
             width: 92%
             margin: 50px auto

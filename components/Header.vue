@@ -128,9 +128,9 @@
                     <el-divider></el-divider>
                     <el-option label="Выйти из системы" value="logout"></el-option>
                 </el-select>
-                <nuxt-link :to="`/${role}/profile`">
+                <nuxt-link :to="`/${role}/profile`" class="avatar">
                     <el-avatar
-                    src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png">
+                    :src="user.avatar ? `/${user.avatar}` : `https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png`">
                     </el-avatar>
                 </nuxt-link>
             </div>
@@ -200,14 +200,14 @@
                         value: 'vacancies',
                         role: 'employer'
                     },
-                    {
-                        label: 'Избранные',
-                        value: 'favorites'
-                    },
-                    {
-                        label: 'Подписка',
-                        value: 'subs'
-                    },
+                    // {
+                    //     label: 'Избранные',
+                    //     value: 'favorites'
+                    // },
+                    // {
+                    //     label: 'Подписка',
+                    //     value: 'subs'
+                    // },
                     {
                         label: 'Отклики',
                         value: 'responses',
@@ -256,7 +256,7 @@
             justify-content: space-between
             align-items: center
             nav
-                width: 500px
+                min-width: 500px
                 a
                     text-decoration: none
                     color: black
@@ -320,6 +320,10 @@
                 margin-bottom: 25px
             a:last-child
                 margin-bottom: 0
+    .avatar
+        margin-left: 25px
+        display: flex
+        align-items: center
     .search__button
         margin: 25px
         width: auto

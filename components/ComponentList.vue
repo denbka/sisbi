@@ -1,33 +1,61 @@
 <template>
-    <div class="list-container" v-loading="listLoading">
-        <div :class="`list list--${view}`">
+    <div class="list-container" v-loading="listLoading" v-if="data.data">
+        <div :class="`list list--${view}`" v-if="!isResponses">
             <component-card
             v-for="item in data.data"
             :key="item.id"
             :onResponse="onResponse"
-            :data="item">
+            :data="item"
+            :tooltips="tooltips">
+            </component-card>
+        </div>
+        <div :class="`list list--${view}`" v-else>
+            <component-card
+            v-for="item in data.data"
+            :key="item.id"
+            :onResponse="onResponse"
+            :onRead="onRead"
+            :fullData="item"
+            :data="item[entity]"
+            :tooltips="tooltips">
             </component-card>
         </div>
         <Pagination
-        v-if="data.total"
+        v-if="data.total > 10"
         @confirm-params="currentPage => $emit('confirm-params', currentPage)"
         :total="data.total"
         :itemsInPage="data.per_page">
         </Pagination>
         <ui-modal name="CardModal">
-            <modal-card-form
-            :onResponse="onResponse">
-            </modal-card-form>
+            <template slot-scope="{ type }">
+                <modal-card-form
+                :tooltips="tooltips"
+                :onVerdict="onVerdict"
+                isResponses
+                :type="type"
+                :onResponse="onResponse">
+                </modal-card-form>
+            </template>
         </ui-modal>
+        <!-- <ui-modal name="EditCardModal">
+            <template slot-scope="{ type }">
+                <modal-card-form-edit
+                :type="type"
+                :onResponse="onResponse">
+                </modal-card-form-edit>
+            </template>
+        </ui-modal> -->
         <ui-modal name="ResponseModal">
             <modal-response-form></modal-response-form>
         </ui-modal>
     </div>
+    <div v-else>Не найдено элементов.</div>
 </template>
 
 <script>
 import ComponentCard from './ComponentCard'
 import ModalCardForm from './ModalCardForm'
+import ModalCardFormEdit from './ModalCardFormEdit'
 import ModalResponseForm from './ModalResponseForm'
 import Pagination from '@/ui/Pagination'
 import { mapState } from 'vuex'
@@ -37,6 +65,7 @@ export default {
         ComponentCard,
         ModalCardForm,
         ModalResponseForm,
+        ModalCardFormEdit,
         Pagination,
     },
     props: {
@@ -48,25 +77,59 @@ export default {
             type: Function,
             required: false
         },
+        statusVisible: {
+            type: Boolean,
+            required: false,
+            default: true
+        },
+        tooltips: {
+            type: Array,
+            required: false,
+            default: []
+        },
+        isResponses: {
+            type: Boolean,
+            required: false,
+            default: false
+        },
+        role: {
+            type: String,
+            required: false,
+        },
+        onVerdict: {
+            type: Function,
+            required: false
+        },
+        onRead: {
+            type: Function,
+            required: false
+        }
     },
-    // watch: {
-    //     'windowWidth'() {
-    //         // if (this.windowWidth <= 1366) {
-    //         //     this.$store.commit('SET_ITEMS', {
-    //         //         entityName: 'view',
-    //         //         response: 'row'
-    //         //     })
-    //         // } else {
-    //         //     this.$store.commit('SET_ITEMS', {
-    //         //         entityName: 'view',
-    //         //         response: 'grid'
-    //         //     })
-    //         // }
-    //     }
-    // },
     computed: {
-        ...mapState(['view', 'listLoading'])
-    }
+        ...mapState(['view', 'listLoading']),
+        entity() {
+            return this.role === 'applicant' ? 'vacancy' : 'resume'
+        },
+    },
+    async mounted() {
+        if (this.$route.query.entity_id) {
+            try {
+                const response = await this.$store.dispatch('getEntities', {
+                    entityName: this.$store.state.role === 'applicant' ? 'resumes' : 'vacancies',
+                    id: this.$route.query.entity_id,
+                    inStore: false
+                })
+                this.$store.commit('SET_ITEMS', {
+                    entityName: 'tempForm',
+                    response
+                })
+                this.$modal.show('CardModal')
+                this.$router.replace('');
+            } catch(e) {
+                console.log(e)
+            }
+        }
+    },
 }
 </script>
 
@@ -86,17 +149,27 @@ export default {
                 .card:first-child
                     margin-top: 0
             &--grid
-                flex: 1 !important
+                // flex: 1 !important
                 display: grid
                 grid-template-columns: 1fr 1fr
-                grid-gap: 50px
+                font-size: 14px
+                grid-gap: 75px
                 .card
                     margin: 0
+                    flex-direction: column
         @media screen and (max-width: 1365px)
             .list
                 flex-direction: column
                 &--grid
                     grid-template-columns: 1fr
+                    .card
+                        flex-direction: row
+        
+        @media screen and (max-width: 700px)
+            .list
+                &--grid
+                    .card
+                        flex-direction: column
 
         // @media screen and (max-width: 1024px)
         // .list

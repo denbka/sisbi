@@ -32,5 +32,6 @@ export default function ({ $axios, store, redirect, route, $cookiz }) {
           }
         // await resendPendingRequests()
       }
+      throw new Error(error)
     })
   }

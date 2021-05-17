@@ -77,7 +77,6 @@ export default {
     .resumes
         .wrapper
             flex-direction: column
-            margin-bottom: 100px
             &-block
                 display: flex
                 width: 100%

@@ -82,7 +82,6 @@ export default {
                 response: JSON.parse(JSON.stringify(item))
             })
             this.$modal.show('ResponseModal')
-            // console.log(123)
         }
     },
     async asyncData({ store, $axios }) {
@@ -96,25 +95,30 @@ export default {
                 response: 'grid'
             })
         }
-        await store.dispatch('getEntities', {
-            entityName: 'resumes',
-            $axios,
-            params: {
-                limit: store.state.limitPagination,
-                page: 1,
-                sort_by: 'date_desc'
-            }
-        })
-        await store.dispatch('getEntities', {
-            entityName: 'cities',
-            $axios
-        })
-        if (!store.state.user) return
-        await store.dispatch('getEntities', {
-            entityName: 'profile/responses',
-            stateName: 'responses',
-            $axios,
-        })
+        try {
+            await store.dispatch('getEntities', {
+                entityName: 'resumes',
+                $axios,
+                params: {
+                    limit: store.state.limitPagination,
+                    page: 1,
+                    sort_by: 'date_desc'
+                }
+            })
+            await store.dispatch('getEntities', {
+                entityName: 'cities',
+                $axios
+            })
+            if (!store.state.user) return
+            await store.dispatch('getEntities', {
+                entityName: 'profile/responses',
+                stateName: 'responses',
+                $axios,
+            })
+        } catch(e) {
+            console.log(e)
+        }
+        
     },
 }
 </script>

@@ -1,13 +1,12 @@
 <template>
     <div class="response-form">
         <div class="header">
-            <h3>Выберите вакансию для приглашения</h3>
+            <h3>Выберите {{entity === 'vacancies' ? 'вакансию' : 'резюме'}} для отклика</h3>
         </div>
         <el-radio-group
-        v-if="vacancies.data"
         v-model="choicedItemId">
             <el-radio
-            v-for="item in vacancies.data"
+            v-for="item in items"
             :key="item.id"
             :label="item.id"
             border>
@@ -16,6 +15,7 @@
         </el-radio-group>
         <div class="handlers">
             <el-button
+            :disabled="disabled"
             @click="onResponse"
             type="primary">
                 Отправить приглашение
@@ -25,6 +25,7 @@
             @click="$modal.hide('ResponseModal')">
                 Закрыть
             </el-button>
+            <div v-if="error" style="color: red; margin-top: 25px">{{error}}</div>
         </div>
     </div>
 </template>
@@ -33,34 +34,55 @@
 import { mapState } from 'vuex'
 export default {
     data: () => ({
-        choicedItemId: null
+        choicedItemId: null,
+        entity: null,
+        items: [],
+        disabled: false,
+        error: null
     }),
     computed: {
         ...mapState({
             data: state => state.tempForm,
-            vacancies: state => state.vacancies
+            vacancies: state => state.vacancies,
+            resumes: state => state.resumes,
+            role: state => state.role
         })
     },
     methods: {
         async onResponse() {
+            this.error = null
+            this.disabled = true
             const data = {
-                resume_id: this.data.id,
-                vacancy_id: this.choicedItemId,
+                resume_id: this.role === 'employer' ? this.data.id : this.choicedItemId,
+                vacancy_id: this.role === 'employer' ? this.choicedItemId : this.data.id,
             }
-            await this.$store.dispatch('saveEntity', {
-                entityName: 'responses',
-                data,
-                method: 'post'
-            })
+            try {
+                await this.$store.dispatch('saveEntity', {
+                    entityName: 'responses',
+                    data,
+                    method: 'post',
+                    inStore: false
+                })
+                this.$modal.hide('ResponseModal')
+            } catch(e) {
+                this.error = 'Такой отклик уже существует'
+            } finally {
+                this.disabled = false
+            }
         }
     },
     async mounted() {
-        if (!this.vacancies.data.length) {
-            await this.$store.dispatch('getEntities', {
-                entityName: 'profile/vacancies',
-                stateName: 'vacancies'
+        this.entity = this.role === 'employer' ? 'vacancies' : 'resumes'
+        console.log(this.entity, this[this.entity])
+        try {
+            const response = await this.$store.dispatch('getEntities', {
+                entityName: `profile/${this.entity}`,
             })
-            this.choicedItem = this.vacancies.data[0].id
+            console.log(response.data)
+            this.items = response.data
+            this.choicedItem = this.items[0].id
+        } catch(e) {
+            console.log(e)
         }
     },
 }
@@ -74,6 +96,12 @@ export default {
         display: flex
         flex-direction: column
         justify-content: space-between
+        .el-radio-group
+            margin: 25px 0
+            display: flex
+            flex-direction: column
+            .el-radio
+                margin: 5px 0
         .handlers
             text-align: center
     @media screen and (max-width: 900px)

@@ -83,15 +83,25 @@ export default {
             .utp
                 height: 100%
                 margin-top: 0px
+                text-align: center
                 display: flex
                 flex-direction: column
                 justify-content: center
                 &__title
-                    font-size: 24px !important
-                    line-height: 40px !important
+                    font-size: 44px !important
+                    line-height: 60px !important
                 .handlers
                     flex-direction: column
                     .el-button
                         margin: 0 !important
                         margin-bottom: 25px !important
+
+    @media screen and (max-width: 600px)
+        .header
+            margin-top: 50px
+            .utp
+                font-size: 12px
+                &__title
+                    font-size: 30px !important
+                    line-height: 40px !important
 </style>

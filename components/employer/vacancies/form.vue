@@ -18,11 +18,11 @@
             :remote-method="query => onSearch(query, 'cities')"
             v-model="form.city_id"
             :loading="searchLoading">
-            <el-option
-            :key="city.id"
-            :label="city.name"
-            :value="city.id"
-            v-for="city in cities.data">
+                <el-option
+                :key="city.id"
+                :label="city.name"
+                :value="city.id"
+                v-for="city in cities.data">
             </el-option>
             </el-select>
         </el-form-item>
@@ -55,7 +55,7 @@
         <el-form-item
         class="places-of-work"
         label="Опыт работы">
-                <el-select v-model="form.experience">
+                <el-select v-model="form.work_experience">
                     <el-option
                     v-for="experience in experiences"
                     :key="experience.value"
@@ -64,7 +64,7 @@
                     </el-option>
                 </el-select>
         </el-form-item>
-        <el-form-item>
+        <el-form-item style="margin: 70px 0 50px 0">
             <el-button
             size="large"
             type="primary"
@@ -92,10 +92,6 @@ export default {
             type: Object,
             required: true
         },
-        places_of_work: {
-            type: Array,
-            required: false
-        }
     },
     computed: {
         ...mapState(['cities']),
@@ -124,12 +120,6 @@ export default {
     .resume-form
         width: 600px
         margin: 0 auto
-        .submit-button
-            margin: 0 auto
-            border-radius: 86px
-            width: 368px
-            height: 60px
-            font-size: 18px
         .places-of-work .el-form-item__content
             display: flex
             justify-content: space-between

@@ -71,7 +71,7 @@
                 margin-right: 0
     @media screen and (max-width: 1024px)
         .how
-            margin-bottom: 100px
+            // margin-bottom: 100px
         .how-container
             .content
                 align-items: center

@@ -5,6 +5,7 @@
                 <nuxt-link class="search__button" to="/employer/vacancies/create">Добавить вакансию</nuxt-link>
             </div>
             <component-list
+            :tooltips="['edit']"
             :data="vacancies">
             </component-list>
         </div>

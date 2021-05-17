@@ -1,19 +1,27 @@
 <template>
     <div class="resume-form-container">
         <div class="wrapper">
-            <bread-crumb>
+            <bread-crumb
+            :action="action">
             </bread-crumb>
-            <h3>Обо мне</h3>
+            <h3
+            v-if="action === 'create'">
+                Обо мне
+            </h3>
             <user-form
+            v-if="action === 'create'"
             :action="action"
             :form="userForm">
             </user-form>
+            <h3
+            v-if="action === 'create'">
+                О резюме
+            </h3>
+            <div v-else style="margin-top: 50px"></div>
             <h3>О Вакансии</h3>
             <vacancy-form
-            @editWorkPlace="editWorkPlace"
             @onSubmit="onSubmit"
             :form="form"
-            :places_of_work="places_of_work"
             :action="action">
             </vacancy-form>
         </div>
@@ -46,45 +54,31 @@ export default {
             end_date : null,
             resume_id : null
         },
-        workPlaceType: null
+        workPlaceType: null,
+        id: null
     }),
     methods: {
         async onSubmit() {
             // Нужно будет пикать по кд сфа в мид после каждой тычки жжать f9 и писать оскорбления в чат а потом прожимать zxc и не попадать
-            const response  = await this.$store.dispatch('saveEntity', {
-                entityName: 'vacancies',
-                data: {...this.form, ...this.userForm},
-                method: 'post'
-            })
-            // console.log(response)
-            // 3c2360f5-e63b-4051-9d77-d3a6cb762f58
-            this.$router.push({ path: `/video`, query: { entity_id: response.id } })
-            // const places = await Promise.all(this.places_of_work.map(async place => {
-            //     place.resume_id = response.id
-            //     return this.$store.dispatch('saveEntity', {
-            //         entityName: 'places_of_work',
-            //         data: place,
-            //         method: 'post'
-            //     })
-            // }))
-            // console.log(places)
-
+            try {
+                const response  = await this.$store.dispatch('saveEntity', {
+                    entityName: 'vacancies',
+                    data: {...this.form, ...this.userForm},
+                    method: this.action === 'edit' ? 'put' : 'post',
+                    id: this.id
+                })
+                this.$router.push({ path: `/video`, query: { entity_id: response.id } })
+            } catch(e) {
+                console.log(e)
+            }
         },
-        editWorkPlace(place) {
-            this.workPlaceType = place ? 'edit' : 'create'
-            this.workPlaceForm = this.workPlaceType === 'edit' ? JSON.parse(JSON.stringify(place)) : this.tempPlaceForm
-            this.$modal.show('WorkPlaceModal')
-        },
-        saveWorkPlace(place) {
-            if (this.workPlaceType === 'edit') this.places_of_work.splice(place.key, 1, place)
-            else this.places_of_work.push(place)
-            this.workPlaceForm = null
-            this.workPlaceType = null
-            this.$modal.hide('WorkPlaceModal')
-        }
     },
-    asyncData({ route, store, params }) {
+    async asyncData({ route, store, params, query, $axios }) {
         const { action } = params
+        store.commit('SET_ITEMS', {
+            entityName: 'actionForm',
+            response: action
+        })
         const userForm = JSON.parse(JSON.stringify(store.state.user))
         userForm.bdate = userForm.bdate ? moment(userForm.bdate.split('-').reverse().join('-')) : null
         console.log(userForm.bdate)
@@ -94,11 +88,28 @@ export default {
             city_id: null,
             schedule: null,
             description: null,
+            work_experience: null
         }
-        const places_of_work = []
+        const id = query.entity_id
 
-        if (action !== 'create') {
-
+        if (action !== 'create' && id) {
+            try {
+                form = await store.dispatch('getEntities', {
+                    entityName: 'vacancies',
+                    id,
+                    inStore: false,
+                    $axios
+                })
+                form.city_id = form.city.id
+                delete form.city
+                await store.dispatch('getEntities', {
+                    entityName: 'cities',
+                    $axios
+                })
+                console.log(form)
+            } catch(e) {
+                console.log(e)
+            }
         }
 
         const getTitle = (action) => {
@@ -113,9 +124,9 @@ export default {
         return {
             action,
             form,
-            places_of_work,
             title,
-            userForm
+            userForm,
+            id
         }
     },
     head() {

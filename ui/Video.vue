@@ -59,6 +59,10 @@ export default {
         videoSrc: {
             type: String,
             required: false
+        },
+        poster: {
+            type: String,
+            required: false
         }
     },
     data() {
@@ -231,10 +235,16 @@ export default {
                     console.log(event)
                     this.chunks.push(event.data)
                 }
-                this.stream = await navigator.mediaDevices.getUserMedia(constraints)
-                player.srcObject = this.stream
-                this.recorder = new MediaRecorder(this.stream)
-                this.recorder.ondataavailable = handleDataAvailable
+                try {
+                    this.stream = await navigator.mediaDevices.getUserMedia(constraints)
+                    player.srcObject = this.stream
+                    this.recorder = new MediaRecorder(this.stream)
+                    this.recorder.ondataavailable = handleDataAvailable
+                } catch(e) {
+                    if (e.message === 'Permission denied') {
+                        this.$emit('on-permission-denied')
+                    }
+                }
             }
         }
     },
@@ -264,6 +274,7 @@ export default {
         height: 450px
         width: 100%
         background: #000
+        margin-top: 50px
         .controls
             width: 100%
             position: absolute

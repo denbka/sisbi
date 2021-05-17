@@ -1,3 +1,16 @@
+@font-face {
+  font-family: CenturyGothic;
+  font-weight: normal;
+  src: url('./Gothic/CenturyGothic.ttf');
+}
+
+@font-face {
+  font-family: CenturyGothic;
+  font-weight: bold;
+  src: url('./Gothic/CenturyGothic-Bold.ttf');
+}
+
+
 *,
 *::before,
 *::after {
@@ -20,9 +33,18 @@ body {
 }
 
 html {
-    font-family: 'Arial', sans-serif;
+    font-family: 'CenturyGothic', sans-serif !important;
     font-size: 16px;
     line-height: 28px;
+}
+
+button, 
+input, 
+select, 
+textarea {
+    font-family: inherit !important;
+    line-height: inherit;
+    color: inherit;
 }
 
 button, input {
@@ -31,6 +53,10 @@ button, input {
 h1,h2,h3,h4,h5, .select-link {
   color: #363848;
   font-weight: bold;
+}
+
+h1 {
+  font-family: 'Arial', sans-serif;
 }
 
 a {
@@ -138,6 +164,114 @@ textarea {
 
 .bordering-button:focus {
   background: #193FF6;
+}
+
+.el-carousel {
+  min-height: 380px !important;
+}
+
+.el-carousel__container {
+  height: 380px !important;
+}
+
+.el-carousel__item {
+  padding: 30px;
+  height: 380px !important;
+}
+
+.el-upload-dragger {
+  padding: 25px;
+}
+
+.upload-photo, .el-upload, .el-upload-dragger {
+  width: 100% !important;
+  height: 100% !important;
+  border: none !important;
+}
+
+.el-popover .content {
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.el-popover .content button {
+  width: 100%;
+  padding: 10px;
+  text-decoration: none;
+  cursor: pointer;
+  background: transparent;
+  border: none;
+  text-align: left;
+  border-radius: 3px;
+}
+
+.el-popover .content button:hover {
+  background: #e9e9e9;
+}
+
+.el-popover .content a {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  text-decoration: none;
+  cursor: pointer;
+  background: transparent;
+  border: none;
+  text-align: left;
+  border-radius: 3px;
+}
+
+.el-popover .content a:hover {
+  background: #e9e9e9;
+}
+
+.upload-video {
+  display: flex !important;
+}
+
+.upload-video button {
+  margin: 0 !important
+}
+
+.upload-video .el-upload-dragger {
+  padding: 0 !important
+}
+
+.el-select-dropdown {
+  z-index: 20221 !important;
+}
+
+.el-upload-list {
+  display: none !important;
+}
+    
+@media screen and (max-width: 768px) {
+  .upload-video {
+    width: 100%;
+  }
+}
+
+@media screen and (max-width: 700px) {
+
+  .el-carousel {
+    min-height: 530px !important;
+  }
+  
+  .el-carousel__container {
+    height: 530px !important;
+  }
+  
+  .el-carousel__item {
+    padding: 30px;
+    height: 530px !important;
+  }
+
+}
+
+@media screen and (max-width: 600px) {
+  h3 {
+    font-size: 26px;
+  }
 }
 
 @media screen and (max-width: 560px) {

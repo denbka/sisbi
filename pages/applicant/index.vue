@@ -16,14 +16,10 @@
                 </Sorts>
                 <div class="wrapper-block">
                     <component-list
+                    :onResponse="onResponse"
                     class="list"
                     :data="vacancies">
                     </component-list>
-                    <!-- <el-collapse v-model="activeNames" @change="handleChange">
-                    <el-collapse-item title="Consistency" name="1">
-                        <div>Consistent with real life: in line with the process and logic of real life, and comply with languages and habits that the users are used to;</div>
-                        <div>Consistent within interface: all elements should be consistent, such as: design style, icons and texts, position of elements, etc.</div>
-                    </el-collapse-item> -->
                     <Filters
                     @confirm-params="isDrop => $emit('confirm-params', isDrop)"
                     :filters="filters"
@@ -84,6 +80,13 @@ export default {
                 entityName: 'vacancies',
                 params
             })
+        },
+        onResponse(item) {
+            this.$store.commit('SET_ITEMS', {
+                entityName: 'tempForm',
+                response: JSON.parse(JSON.stringify(item))
+            })
+            this.$modal.show('ResponseModal')
         }
     },
     async asyncData({ store, $axios }) {
@@ -104,14 +107,10 @@ export default {
         margin: 150px 0 200px 0
     .vacancies
         .wrapper
-            margin-bottom: 100px
             .list
                 flex: 0.8
-            // flex-direction: column
-
         .wrapper
             flex-direction: column
-            margin-bottom: 100px
             &-block
                 display: flex
                 width: 100%

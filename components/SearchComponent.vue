@@ -92,12 +92,12 @@ export default {
                 // top: 10%
     @media screen and (max-width: 369px)
         .search
-            height: 70px
+            height: 60px
             &__input
                 padding-left: 25px
-                font-size: 18px
+                font-size: 14px
             &__button
-                right: -40px
-                width: 70px
-                height: 70px
+                right: -30px
+                width: 60px
+                height: 60px
 </style>

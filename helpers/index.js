@@ -36,3 +36,9 @@ export const formItems = [
         id: 'bdate',
     },
 ]
+
+const crypto = require('crypto')
+
+export const generateID = () => {
+  return crypto.randomBytes(8).toString('hex')
+}

@@ -1,10 +1,10 @@
 <template>
     <div class="steps">
-        <nuxt-link active-class="nav-active" exact to="/microphone">Проверка микрофона</nuxt-link>
-        <span>/</span>
-        <nuxt-link active-class="nav-active" exact :to="`/${role}/${getEntity}/create`">Заполнение формы</nuxt-link>
-        <span>/</span>
-        <nuxt-link active-class="nav-active" exact :to="`/video/?entity_id=${$route.query.entity_id}`">Запись видео</nuxt-link>
+        <!-- <nuxt-link active-class="nav-active" exact to="/microphone">Проверка микрофона</nuxt-link>
+        <span>/</span> -->
+        <nuxt-link active-class="nav-active" :to="`/${role}/${getEntity}/${$route.query.entity_id ? 'edit' : 'create'}/${$route.query.entity_id ? `?entity_id=${$route.query.entity_id}` : ''}`">Заполнение формы</nuxt-link>
+        <span v-if="$route.query.entity_id">/</span>
+        <nuxt-link v-if="$route.query.entity_id" active-class="nav-active" exact :to="`/video?entity_id=${$route.query.entity_id}`">Запись видео</nuxt-link>
     </div>
 </template>
 
@@ -16,6 +16,9 @@ export default {
         },
         getEntity() {
             return this.role === 'applicant' ? 'resumes' : 'vacancies'
+        },
+        action() {
+            return this.$store.state.actionForm
         }
     }
 }
@@ -24,7 +27,8 @@ export default {
 <style lang="sass">
     .steps
         width: 500px
-        margin: 50px auto
+        margin: 0 auto
+        margin-top: 50px
         display: flex
         justify-content: center
         a

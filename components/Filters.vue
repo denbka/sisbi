@@ -113,7 +113,7 @@ export default {
 <style lang="sass">
     .filters
         flex: 0.2
-        margin-left: 50px
+        margin-left: 75px
         box-shadow: 0px 10px 40px rgb(0 0 0 / 11%)
         border-radius: 20px
         height: 100%
@@ -126,7 +126,7 @@ export default {
             display: flex
             align-items: center
             h4
-                font-size: 24px
+                font-size: 20px
                 margin-left: 25px
         .buttons
             width: 80%

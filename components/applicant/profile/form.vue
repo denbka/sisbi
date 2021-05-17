@@ -47,7 +47,7 @@ export default {
                     border: 1px solid #C2C2C2
                     border-radius: 60px
                 .el-select
-                    width: 169px
+                    width: 151px
                     input
                         color: #636363 !important
                         border: 1px solid #C2C2C2 !important

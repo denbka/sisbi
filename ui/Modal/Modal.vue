@@ -16,7 +16,7 @@
       v-if="message.length">
         <p>{{message}}</p>
       </div>
-      <slot></slot>
+      <slot :type="type"></slot>
       <div
       class="buttons"
       v-if="buttons.length">
@@ -69,7 +69,8 @@ export default {
     buttons: [],
     message: '',
     title: '',
-    form: null
+    form: null,
+    type: 'info',
   }),
   beforeMount() {
     this.$modal.sub.$on('toggle', this.onToggle)
@@ -83,7 +84,8 @@ export default {
         document.body.style.overflowY = 'auto'
       }
     },
-    onToggle({ form, dialogName, visible, message, title, buttons }) {
+    onToggle({ form, dialogName, visible, message, title, buttons, type }) {
+      if (type && typeof type === String) this.type = type
       if (form) this.form = form
       if (buttons) this.buttons = buttons
       if (title) this.title = title
@@ -121,7 +123,6 @@ export default {
     margin: auto;
     background: #fff;
     overflow: hidden;
-    overflow-y: auto;
     border-radius: 12px;
   }
   .title {

@@ -59,10 +59,12 @@
                 v-model="isWorkAtPlace">
                 </el-switch>
                 <el-button
+                class="add"
                 type="primary"
+                size="mini"
                 v-if="isWorkAtPlace"
                 @click="$emit('editWorkPlace')">
-                    Добавить место работы
+                    <i class="el-icon-plus"></i>
                 </el-button>
                 <div v-else></div>
         </el-form-item>
@@ -76,18 +78,21 @@
                 <el-card
                 class="box-card">
                 <div slot="header" class="clearfix">
-                    <span>{{`${place.start_date} - ${place.end_date}`}}</span>
+                    <span>{{`${renderDate(place.start_date)} - ${renderDate(place.end_date)}`}}</span>
+                    <div class="icon" @click.stop="$emit('onRemovePlace', place)">
+                        <i class="el-icon-delete"></i>
+                    </div>
                 </div>
                 <div>
-                    <h2>{{place.company}}</h2><br>
+                    <h2>{{place.company}}</h2>
                     <span>{{place.position}}</span>
+                    <p>{{place.description}}</p>
                 </div>
                 </el-card>
             </div>
         </el-form-item>
         <el-form-item>
             <el-button
-            size="large"
             type="primary"
             class="submit-button"
             @click="$emit('onSubmit')">
@@ -121,9 +126,21 @@ export default {
     computed: {
         ...mapState(['cities']),
     },
+    methods: {
+        renderDate(date) {
+            console.log(date)
+            const splitDate = date.split('-')
+            return `${this.months.find((item, key) => key === Number(splitDate[0]))}, ${splitDate[1]}г.`
+        }
+    },
+    mounted() {
+        if (this.places_of_work.length) this.isWorkAtPlace = true
+        else this.isWorkAtPlace = false
+    },
     data: () => ({
         schedules: ['5/2', '2/2', '3/3', 'Ночная смена', 'Гибкий'],
-        isWorkAtPlace: false
+        isWorkAtPlace: false,
+        months: ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'],
     })
 }
 </script>
@@ -133,14 +150,20 @@ export default {
         width: 600px
         margin: 0 auto
         .submit-button
-            margin: 0 auto
+            margin: 25px auto
             border-radius: 86px
-            width: 368px
-            height: 60px
-            font-size: 18px
+            width: 250px
+            height: 50px
+            font-size: 16px
         .places-of-work .el-form-item__content
             display: flex
+            align-items: center
             justify-content: space-between
+            &::before, &::after
+                display: none
+            .add
+                border-radius: 50px
+                padding: 10px
             button
                 margin: 0
         .el-cards .el-form-item__content
@@ -151,4 +174,27 @@ export default {
                 flex: 1
                 margin-top: 25px
                 cursor: pointer
+                p
+                    overflow: hidden
+                    -webkit-box-orient: vertical
+                    line-height: 30px
+                    text-overflow: ellipsis
+                    display: -webkit-box
+                    -webkit-line-clamp: 2
+                &__header .clearfix
+                    display: flex
+                    align-items: center
+                    justify-content: space-between
+                    .icon
+                        display: flex
+                        background: #F05F3F
+                        height: 34px
+                        width: 34px
+                        color: #fff
+                        border-radius: 50px
+                        i
+                            margin: auto
+                            display: flex
+                            align-items: center
+                            
 </style>

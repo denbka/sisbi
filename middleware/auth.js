@@ -16,7 +16,8 @@ export default async ({ $axios, store, redirect, route, $cookiz }) => {
             '/employer',
             '/login',
             '/register',
-            '/about'
+            '/about',
+            '/recovery'
         ]
         if (whiteList.find(path => route.path === path)) return redirect()
         else {

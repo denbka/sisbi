@@ -16,6 +16,7 @@
 
                 </template>
             </section-header>
+        </div>
             <div class="applicant">
                 <div class="search-container">
                     <search-component
@@ -24,35 +25,36 @@
                     :role="role">
                     </search-component>
                 </div>
-                <section class="resumes">
-                    <div class="resumes__info">
-                        <h3>Резюме</h3>
-                        <p>
-                            Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy 
-                            nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat
-                        </p>
-                    </div>
-                    <!-- <Sorts
-                    :stats="resumes"
-                    :role="role"
-                    @on-sort="sort_by => $emit('confirm-params', { sort_by })">
-                    </Sorts> -->
-                    <div class="wrapper-block">
-                        <component-list
-                        @confirm-params="currentPage => $emit('confirm-params', { currentPage })"
-                        class="list-parent"
-                        :data="resumes">
-                        </component-list>
-                        <!-- <Filters
-                        class="wrapper-block__filters"
-                        @confirm-params="isDrop => $emit('confirm-params', { isDrop })"
-                        :filters="filters"
-                        :cities="cities">
-                        </Filters> -->
-                    </div>
-                </section>
+                <div class="wrapper">
+                    <section class="resumes">
+                        <div class="resumes__info">
+                            <h3>Резюме</h3>
+                            <p>
+                                Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy 
+                                nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat
+                            </p>
+                        </div>
+                        <!-- <Sorts
+                        :stats="resumes"
+                        :role="role"
+                        @on-sort="sort_by => $emit('confirm-params', { sort_by })">
+                        </Sorts> -->
+                        <div class="wrapper-block">
+                            <component-list
+                            @confirm-params="currentPage => $emit('confirm-params', { currentPage })"
+                            class="list-parent"
+                            :data="resumes">
+                            </component-list>
+                            <!-- <Filters
+                            class="wrapper-block__filters"
+                            @confirm-params="isDrop => $emit('confirm-params', { isDrop })"
+                            :filters="filters"
+                            :cities="cities">
+                            </Filters> -->
+                        </div>
+                    </section>
+                </div>
             </div>
-        </div>
         <section-how></section-how>
     </div>
 </template>
@@ -112,7 +114,6 @@ export default {
                 margin-bottom: 100px
         .wrapper
             flex-direction: column
-            margin-bottom: 100px
             &-block
                 display: flex
                 width: 100%

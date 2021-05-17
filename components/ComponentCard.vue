@@ -1,22 +1,14 @@
 <template>
     <div class="card" @click="openModal">
-        <div class="img-container">
+        <div :class="`img-container ${view === 'grid' ? 'img-container__griding' : ''}`">
             <img
-            v-if="data.img"
-            :src="data.img.path">
+            v-if="false">
             <Stub v-else />
+            <!-- `/${data.poster.urn}` -->
         </div>
         <div class="card__info">
             <h4>{{data.position}}</h4>
-            <!-- <span class="card__info__company">{{data.companyName}}</span> -->
-            <span class="card__info__company">рога и копыта</span>
-            <el-rate
-            v-if="true"
-            :value="data.rating"
-            disabled
-            show-score
-            score-template="{value}">
-            </el-rate>
+            <span class="card__info__company" v-if="data.companyName">{{data.companyName}}</span>
             <div style="margin-top: auto">
                 <div class="card__info__item">
                     <span>Опыт работы</span>
@@ -36,15 +28,27 @@
                 </div>
             </div>
         </div>
-        <card-status>
+        <card-status
+        :status="fullData ? fullData.status : 'sended'"
+        v-if="statusVisible">
         </card-status>
+        <tool-tips
+        v-if="tooltips.length"
+        class="tooltip-more">
+            <nuxt-link
+            v-if="tooltips.includes('edit')"
+            :to="`/${role}/${getEntity}/edit?entity_id=${data.id}`">
+                Редактировать
+            </nuxt-link>
+            <!-- <button @click="">Снять с публикации</button> -->
+        </tool-tips>
         <button
-        :disabled="!!data.response"
+        :disabled="data.responded"
         type="success"
         v-if="onResponse"
         @click.stop="!data.response ? onResponse(data) : null"
-        class="card__on-response-button">
-            {{data.response ? 'Вы уже откликнулись' : 'Откликнуться'}}
+        :class="`card__on-response-button ${data.responded ? 'card__on-response-button--responded' : ''}`">
+            {{data.responded ? 'Вы уже откликнулись' : 'Откликнуться'}}
         </button>
     </div>
 </template>
@@ -52,6 +56,7 @@
 <script>
 import Stub from './Stub'
 import CardStatus from './ComponentCardStatus'
+import ToolTips from './ComponentTooltips'
 import moment from 'moment'
 export default {
     props: {
@@ -62,22 +67,50 @@ export default {
         onResponse: {
             type: Function,
             required: false
+        },
+        statusVisible: {
+            type: Boolean,
+            required: false,
+            default: true
+        },
+        tooltips: {
+            type: Array,
+            required: false,
+            default: []
+        },
+        fullData: {
+            type: Object,
+            required: false
+        },
+        onRead: {
+            type: Function,
+            required: false
         }
     },
     components: {
         Stub,
-        CardStatus
+        CardStatus,
+        ToolTips
     },
     methods: {
-        openModal() {
+        async openModal(type) {
             this.$store.commit('SET_ITEMS', {
                 entityName: 'tempForm',
-                response: JSON.parse(JSON.stringify(this.data))
+                response: !this.fullData 
+                ? JSON.parse(JSON.stringify(this.data))
+                : JSON.parse(JSON.stringify({...this.data, fullData: this.fullData}))
             })
-            this.$modal.show('CardModal')
+            if (this.fullData && this.fullData.status === 'sended') await this.onRead(this.role, this.fullData.id)
+            this.$modal.show(type === 'edit' ? 'EditCardModal' : 'CardModal', { type })
         }
     },
     computed: {
+        role() {
+            return this.$store.state.role
+        },
+        getEntity() {
+            return this.role === 'applicant' ? 'resumes' : 'vacancies'
+        },
         getWorkExperience() {
             const exp = this.data.work_experience
             if (exp === 0) return 'Без опыта'
@@ -85,6 +118,9 @@ export default {
         },
         getDate() {
             return moment.unix(this.data.date_of_change).format('DD MMMM, YYYYг.')
+        },
+        view() {
+            return this.$store.state.view
         }
     }
 }
@@ -93,12 +129,13 @@ export default {
 <style lang="sass" scoped>
     
     .card
+        min-height: 300px
         position: relative
         width: 100%
         box-shadow: 0px 10px 40px rgba(0, 0, 0, 0.11)
         border-radius: 20px
-        // min-height: 322px
         display: flex
+        align-items: center
         margin: 25px 0
         padding: 25px
         cursor: pointer
@@ -107,12 +144,21 @@ export default {
             padding: 15px
             flex: 0.4
             height: 100%
+            width: 100%
             margin-right: 32px
+            img
+                // height: 100%
+                // width: 100%
+                object-fit: cover
+            &__griding
+                margin-right: 0px !important
         &__info
             flex: 0.6
+            width: 100%
             text-align: center
             h4
                 font-size: 24px
+                margin-bottom: 15px
             &__company
                 font-size: 18px
                 color: #636363
@@ -140,9 +186,16 @@ export default {
             left: 50%
         &:hover
             background: #fcfcfc
+    .tooltip-more
+        position: absolute
+        right: 0
+        top: 0
+        font-weight: bold
+        font-size: 20px
+
     @media screen and (max-width: 700px)
         .card
-            min-height: 200px
+            height: auto
             font-size: 16px
             padding: 20px
             flex-direction: column
@@ -153,6 +206,7 @@ export default {
                 border-radius: 6px
                 width: 100%
                 min-height: 200px
+                margin-right: 0px !important
                 margin-bottom: 25px
             &__info
                 flex: 0.7
@@ -168,10 +222,11 @@ export default {
                 &__item
                     line-height: 24px
             &__on-response-button
+                width: 250px
                 font-size: 12px
                 width: auto
                 height: auto
-                padding: 10px 30px
+                padding: 2px 30px
                 position: absolute
                 bottom: -32px
                 transform: translate(-50%, -50%)
@@ -183,6 +238,8 @@ export default {
                 h4
                     font-size: 18px
             &__on-response-button
-                width: 60%
+                width: 190px
+                &--responded
+                    width: 190px
 
 </style>

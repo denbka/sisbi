@@ -1,3 +1,4 @@
+// import videp from 'video.js/src/css/'
 export default {
 
   target: 'server',
@@ -19,7 +20,8 @@ export default {
 
   // Global CSS: https://go.nuxtjs.dev/config-css
   css: [
-    '~assets/main.css'
+    '~assets/main.css',
+    'video.js/dist/video-js.min.css'
   ],
 
   loading: {
@@ -33,7 +35,8 @@ export default {
     '@/plugins/global-components',
     '@/plugins/modal',
     '@/plugins/moment',
-    '@/plugins/resize'
+    '@/plugins/resize',
+    // { src: '@/plugins/video', ssr: false }
   ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
@@ -65,7 +68,6 @@ export default {
     },
     initialState: { testParam: false }
   },
-
   // sassResources: [
   //   '~assets/constants.sass',
   //   '~assets/element-variables.scss'
@@ -92,6 +94,10 @@ export default {
       changeOrigin: true
     },
     '/videos': {
+      target: 'http://193.7.217.242:5000',
+      changeOrigin: true
+    },
+    '/images': {
       target: 'http://193.7.217.242:5000',
       changeOrigin: true
     }

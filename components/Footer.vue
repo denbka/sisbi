@@ -46,7 +46,8 @@
 
 <style lang="sass" scoped>
     .footer
-        height: 500px
+        height: 400px
+        margin-top: 100px
         background: #283646
         a, span, i
             color: #fff
@@ -103,6 +104,8 @@
                     margin-bottom: 0 !important
     
     @media screen and (max-width: 600px)
+        .footer
+            margin-top: 50px
         .footer-container
             flex-direction: column
             .title

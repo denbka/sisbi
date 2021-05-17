@@ -57,4 +57,24 @@ export default {
             border: 0
             &:hover
                 background: #f7f7f7
+@media screen and (max-width: 1024px)
+    .resume-stub
+        padding: 00 !important
+        &__info
+            height: 100%
+            align-items: center
+            justify-content: center
+            width: 100%
+
+@media screen and (max-width: 600px)
+    .resume-stub
+        &__info
+            font-size: 18px
+            span
+                padding: 0 25px
+                text-align: center
+            a
+                font-size: 14px
+                width: 200px
+                height: 40px
 </style>

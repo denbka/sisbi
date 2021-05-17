@@ -1,6 +1,6 @@
 <template>
     <div class="profile">
-        <div class="wrapper">
+        <div class="wrapper" v-if="isWrapper">
             <applicant-nav class="profile-nav"></applicant-nav>
             <div :class="`profile-content ${contentClass ? contentClass : ''}`">
                 <slot></slot>
@@ -11,14 +11,17 @@
 
 <script>
 import ApplicantNav from '@/components/applicant/Navigation'
-import { mapState } from 'vuex'
-import { formItems } from '@/helpers'
-import moment from 'moment'
+
 export default {
     props: {
         contentClass: {
             type: String,
             required: false
+        },
+        isWrapper: {
+            type: Boolean,
+            required: false,
+            default: true
         }
     },
     components: {
