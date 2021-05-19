@@ -13,12 +13,8 @@
             :action="action"
             :form="userForm">
             </user-form>
-            <h3
-            v-if="action === 'create'">
-                О резюме
-            </h3>
             <div v-else style="margin-top: 50px"></div>
-            <h3>О Вакансии</h3>
+            <h3 v-if="action === 'create'">О Вакансии</h3>
             <vacancy-form
             @onSubmit="onSubmit"
             :form="form"
@@ -82,13 +78,21 @@ export default {
         const userForm = JSON.parse(JSON.stringify(store.state.user))
         userForm.bdate = userForm.bdate ? moment(userForm.bdate.split('-').reverse().join('-')) : null
         console.log(userForm.bdate)
+        // let form = {
+        //     position: null,
+        //     salary: null,
+        //     city_id: null,
+        //     schedule: null,
+        //     description: null,
+        //     work_experience: null
+        // }
         let form = {
-            position: null,
-            salary: null,
-            city_id: null,
-            schedule: null,
-            description: null,
-            work_experience: null
+            position: 'Тест резюме ',
+            salary: 99000,
+            city_id: '44f19802-f354-4276-bec7-cff45c2e9dbe',
+            schedule: '5/2',
+            description: 'Ищем зхс 3с гуля для борьбы с говнокодом',
+            work_experience: 0
         }
         const id = query.entity_id
 

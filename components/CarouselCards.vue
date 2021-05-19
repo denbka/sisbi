@@ -14,6 +14,7 @@
                 :key="item.id"
                 :name="`${key}`">
                     <component-card
+                    :isProfile="true"
                     :tooltips="tooltips"
                     :statusVisible="false"
                     :data="item">
@@ -66,20 +67,24 @@ export default {
             this.arrowLeftDisabled = this.initialIndex === 0 ? true : false
             this.arrowRightDisabled = this.initialIndex === this.items.data.length - 1 ? true : false
         },
-        setActiveItem(type) {
+        async setActiveItem(type) {
             if (type === '+') {
                 this.initialIndex++
             }
             if (type === '-') {
                 this.initialIndex--
             }
-            this.getResponses()
+            this.$store.commit('SET_ITEMS', {
+                entityName: 'initialIndex',
+                response: this.initialIndex
+            })
+            await this.getResponses()
         },
         async getResponses() {
             try {
                 const response = await this.$axios.$get('/profile/responses', {
                     params: {
-                        resume_id: this.items.data[this.initialIndex].id
+                        [`${this.role === 'applicant' ? `resume` : 'vacancy'}_id`]: this.items.data[this.initialIndex].id
                     }
                 })
                 this.$store.commit('SET_ITEMS', {
@@ -105,6 +110,10 @@ export default {
             type: Array,
             required: false,
             default: []
+        },
+        isProfile: {
+            required: false,
+            default: false
         }
     },
 }

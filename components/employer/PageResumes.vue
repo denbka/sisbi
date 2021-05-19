@@ -19,7 +19,8 @@
                     @confirm-params="currentPage => $emit('confirm-params', { currentPage })"
                     class="list-parent"
                     :data="resumes"
-                    :onResponse="onResponse">
+                    :onResponse="onResponse"
+                    :onConfirmParams="onConfirmParams">
                     </component-list>
                     <Filters
                     class="wrapper-block__filters"
@@ -67,6 +68,10 @@ export default {
             type: Function,
             required: true
         },
+        onConfirmParams: {
+            type: Function,
+            required: false
+        }
     }
 }
 </script>

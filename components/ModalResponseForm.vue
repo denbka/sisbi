@@ -33,6 +33,12 @@
 <script>
 import { mapState } from 'vuex'
 export default {
+    props: {
+        onConfirmParams: {
+            type: Function,
+            required: false
+        },
+    },
     data: () => ({
         choicedItemId: null,
         entity: null,
@@ -63,27 +69,27 @@ export default {
                     method: 'post',
                     inStore: false
                 })
+                await this.onConfirmParams()
                 this.$modal.hide('ResponseModal')
             } catch(e) {
+                console.log(e)
                 this.error = 'Такой отклик уже существует'
             } finally {
                 this.disabled = false
             }
-        }
+        },
+        async connect() {
+            console.log("Send...");
+            this.$connection.invoke("SendMessage", "s", "hello")
+            .catch(function (err) {
+                return console.error(err.toString())
+            })
+        },
     },
     async mounted() {
         this.entity = this.role === 'employer' ? 'vacancies' : 'resumes'
-        console.log(this.entity, this[this.entity])
-        try {
-            const response = await this.$store.dispatch('getEntities', {
-                entityName: `profile/${this.entity}`,
-            })
-            console.log(response.data)
-            this.items = response.data
-            this.choicedItem = this.items[0].id
-        } catch(e) {
-            console.log(e)
-        }
+        this.items = this.data.itemsWithoutResponse
+        this.choicedItem = this.items[0].id
     },
 }
 </script>
@@ -91,11 +97,13 @@ export default {
 <style lang="sass" scoped>
     .response-form
         margin: 25px
-        min-width: 800px
+        min-width: 400px
         min-height: 50vh
         display: flex
         flex-direction: column
         justify-content: space-between
+        .header h3
+                font-size: 24px !important
         .el-radio-group
             margin: 25px 0
             display: flex

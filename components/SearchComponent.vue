@@ -56,7 +56,7 @@ export default {
             width: 100%
             height: 100%
             border-radius: 100px
-            border: 1px solid #e7e7e7
+            border: 1px solid #eeeeee
             font-size: 24px
             padding-left: 50px
         &__filter

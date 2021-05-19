@@ -10,13 +10,24 @@ export default {
         status: {
             type: String,
             required: false
-        }
+        },
+        isSenderEmployer: {
+            required: false
+        },
+        isResponses: {
+            type: Boolean,
+            required: false,
+            default: false
+        },
+    },
+    mounted() {
+        console.log(this.isSenderEmployer)
     },
     computed: {
         getStatus() {
             switch (this.status) {
                 case 'sended': return 'Открыта'
-                case 'readed': return 'Открыта'
+                case 'readed': return 'Просмотрено'
                 case 'accepted': return 'Принято'
                 case 'rejected': return 'Отказ'
                 default: return 'Открыта'
@@ -28,8 +39,8 @@ export default {
 
 <style lang="sass" scoped>
     .status
-        background: #30C736
-        width: 130px
+        // width: 130px
+        padding: 0 25px 0 35px
         height: 40px
         display: flex
         top: 27px
@@ -46,11 +57,11 @@ export default {
             left: 10px
             font-size: 30px
         &--rejected
-            background: #c94444
+            background: #c94444 !important
         &--accepted
-            background: #30C736
+            background: #30C736 !important
         &--readed
-            background: #dbdbdb
+            background: #dbdbdb !important
     @media screen and (max-width: 700px)
         .status
             height: 30px

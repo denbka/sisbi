@@ -114,7 +114,7 @@ export default {
     .filters
         flex: 0.2
         margin-left: 75px
-        box-shadow: 0px 10px 40px rgb(0 0 0 / 11%)
+        box-shadow: 0px 10px 40px rgb(0 0 0 / 7%)
         border-radius: 20px
         height: 100%
         
@@ -140,6 +140,17 @@ export default {
             border: none
     @media screen and (max-width: 1024px)
         .filters
+            margin-left: auto
+            width: 250px
+            margin-left: 0
+            margin-bottom: 50px
+            &__header
+                h4
+                    font-size: 20px
+                    margin-left: 25px
+    @media screen and (max-width: 600px)
+        .filters
+            width: 100%
             margin-left: 0
             margin-bottom: 50px
             &__header

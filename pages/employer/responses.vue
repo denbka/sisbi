@@ -4,7 +4,8 @@
             <carousel-cards
             :tooltips="['edit']"
             :role="role"
-            :items="vacancies">
+            :items="vacancies"
+            :isProfile="true">
             </carousel-cards>
             <div class="responses__offers">
                 <!-- <Sorts
@@ -47,12 +48,17 @@ export default {
         CarouselCards
     },
     computed: {
-        ...mapState(['user', 'vacancies', 'responses']),
+        ...mapState(['user', 'vacancies', 'responses', 'tempForm']),
     },
     methods: {
         async onVerdict(role, response_id, type) {
             try {
                 const response = await this.$axios.$post(`/profile/responses/${response_id}/${type}`)
+                this.$store.commit('SET_ITEMS', {
+                    entityName: 'tempForm',
+                    response: JSON.parse(JSON.stringify({...this.tempForm, fullData: {...this.tempForm.fullData, status: `${type}ed`}}))
+                })
+                await this.getResponses()
                 console.log(response)
             } catch(e) {
                 console.log(e)
@@ -66,6 +72,22 @@ export default {
                 console.log(e)
             }
         },
+        async getResponses() {
+            try {
+                console.log(this.vacanices, this.$store.state.initialIndex)
+                const response = await this.$axios.$get('/profile/responses', {
+                    params: {
+                        vacancy_id: this.vacancies.data[this.$store.state.initialIndex].id
+                    }
+                })
+                this.$store.commit('SET_ITEMS', {
+                    entityName: 'responses',
+                    response
+                })
+            } catch(e) {
+                console.log(e)
+            }
+        }
     },
     async asyncData({isDev, route, store, $axios, env, params, query, req, res, redirect, error}) {
         const role = store.state.role

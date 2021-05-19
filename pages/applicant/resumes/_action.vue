@@ -88,6 +88,7 @@ export default {
         async requestWorkPlaces(resume_id) {
             try {
                 await Promise.all(this.places_of_work.map(async place => {
+                    if (place.id.length === 4) delete place.id
                     const response = this.$store.dispatch('saveEntity', {
                         entityName: `resumes/${resume_id}/places_of_work`,
                         data: {
@@ -120,7 +121,7 @@ export default {
         saveWorkPlace(place) {
             if (this.workPlaceType === 'edit') this.places_of_work.splice(place.key, 1, place)
             else this.places_of_work.push(place)
-            this.workPlaceForm = null
+            this.workPlaceForm = {...this.tempPlaceForm}
             this.workPlaceType = null
             this.$modal.hide('WorkPlaceModal')
         },
@@ -138,12 +139,19 @@ export default {
         const { action } = params
         const userForm = JSON.parse(JSON.stringify(store.state.user))
         userForm.bdate = moment(userForm.bdate.split('-').reverse().join('-'))
+        // let form = {
+        //     position: null,
+        //     salary: null,
+        //     city_id: null,
+        //     schedule: null,
+        //     description: null,
+        // }
         let form = {
-            position: null,
-            salary: null,
-            city_id: null,
-            schedule: null,
-            description: null,
+            position: 'Тест резюме ',
+            salary: 125000,
+            city_id: '44f19802-f354-4276-bec7-cff45c2e9dbe',
+            schedule: '2/2',
+            description: 'Я гуль зхс 3с ранга, сражающийся с нечестивыми программистами, которые пишут говноCODE',
         }
         let places_of_work = []
 

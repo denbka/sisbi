@@ -36,6 +36,7 @@ export default {
     '@/plugins/modal',
     '@/plugins/moment',
     '@/plugins/resize',
+    '@/plugins/signalr'
     // { src: '@/plugins/video', ssr: false }
   ],
 
@@ -100,6 +101,11 @@ export default {
     '/images': {
       target: 'http://193.7.217.242:5000',
       changeOrigin: true
+    },
+    '/response_hub': {
+      target: 'http://193.7.217.242:5000',
+      changeOrigin: true,
+      ws: true
     }
   },
 

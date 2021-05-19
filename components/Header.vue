@@ -39,7 +39,12 @@
                 </div>
                 <div v-else class="drawer-container">
                     <div class="info">
-                        <img src="/icons/avatar.png" alt="">
+                        <el-avatar
+                        :size="180"
+                        style="background: #000"
+                        fit="contain"
+                        :src="user.avatar ? `/${user.avatar}` : `https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png`">
+                        </el-avatar>
                         <span>{{getFullname}}</span>
                     </div>
                     <nuxt-link
@@ -130,6 +135,8 @@
                 </el-select>
                 <nuxt-link :to="`/${role}/profile`" class="avatar">
                     <el-avatar
+                    style="background: #000"
+                    fit="contain"
                     :src="user.avatar ? `/${user.avatar}` : `https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png`">
                     </el-avatar>
                 </nuxt-link>

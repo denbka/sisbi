@@ -14,7 +14,8 @@
     :cities="cities.data"
     :resumes="resumesWithResponses"
     :role="role"
-    :onResponse="onResponse">
+    :onResponse="onResponse"
+    :onConfirmParams="onConfirmParams">
     </page-resumes>
 </template>
 
@@ -46,12 +47,13 @@ export default {
             cities: [],
             position: '',
         },
-        sort: 'date_desc'
+        sort: 'date_desc',
+        choicedItemId: null
     }),
     methods: {
-        async onConfirmParams({ sort_by, isDrop, currentPage }) {
-            if (sort_by) this.sort = sort_by
-            if (isDrop) {
+        async onConfirmParams(props) {
+            if (props?.sort_by) this.sort = props.sort_by
+            if (props?.isDrop) {
                 this.filters = {
                     salary: [0, 0],
                     work_exp: [0, 0],
@@ -67,7 +69,7 @@ export default {
                 min_work_exp: this.filters.work_exp[0] ? this.filters.work_exp[0] : null,
                 max_work_exp: this.filters.work_exp[1] ? this.filters.work_exp[1] : null,
                 sort_by: this.sort,
-                page: currentPage,
+                page: props?.currentPage ? props.currentPage : 1,
                 limit: this.limitPagination,
             }
             
@@ -76,12 +78,38 @@ export default {
                 params
             })
         },
-        onResponse(item) {
-            this.$store.commit('SET_ITEMS', {
-                entityName: 'tempForm',
-                response: JSON.parse(JSON.stringify(item))
-            })
-            this.$modal.show('ResponseModal')
+        async onResponse(item, itemsWithoutResponse) { 
+            if (itemsWithoutResponse.length === 1) {
+                this.choicedItemId = itemsWithoutResponse[0].id
+                await this.onRequestResponse(item)
+            } else {
+                this.$store.commit('SET_ITEMS', {
+                    entityName: 'tempForm',
+                    response: JSON.parse(JSON.stringify({...item, itemsWithoutResponse }))
+                })
+                this.$modal.show('ResponseModal')
+            }
+        },
+        async onRequestResponse(item) {
+            // this.disabled = true
+            const data = {
+                resume_id: this.role === 'employer' ? item.id : this.choicedItemId,
+                vacancy_id: this.role === 'employer' ? this.choicedItemId : item.id,
+            }
+            try {
+                await this.$store.dispatch('saveEntity', {
+                    entityName: 'responses',
+                    data,
+                    method: 'post',
+                    inStore: false
+                })
+                await this.onConfirmParams()
+                this.$forceUpdate()
+            } catch(e) {
+                console.log('Такой отклик уже существует')
+            } finally {
+                // this.disabled = false
+            }
         }
     },
     async asyncData({ store, $axios }) {
@@ -90,10 +118,10 @@ export default {
                 entityName: 'limitPagination',
                 response: 4
             })
-            store.commit('SET_ITEMS', {
-                entityName: 'view',
-                response: 'grid'
-            })
+            // store.commit('SET_ITEMS', {
+            //     entityName: 'view',
+            //     response: 'grid'
+            // })
         }
         try {
             await store.dispatch('getEntities', {
@@ -110,11 +138,22 @@ export default {
                 $axios
             })
             if (!store.state.user) return
+            const entity = store.state.role === 'employer' ? 'vacancies' : 'resumes'
+
             await store.dispatch('getEntities', {
                 entityName: 'profile/responses',
                 stateName: 'responses',
                 $axios,
             })
+            const response = await store.dispatch('getEntities', {
+                entityName: `profile/${entity}`,
+                stateName: entity
+            })
+            const items = response.data
+            return {
+                items,
+                entity
+            }
         } catch(e) {
             console.log(e)
         }

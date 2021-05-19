@@ -1,112 +1,119 @@
 <template>
     <div class="card-form">
-        <video-component
-        :videoSrc="`/${data.videos[0].urn}`"
-        :poster="data.poster ? `/${data.poster.urn}` : null"
-        :isRecord="false">
-        </video-component>
-        <!-- <div class="header">
-            <div class="header__item">
-                <h3>{{data.position}}</h3>
-                <tool-tips
-                v-if="tooltips.length"
-                class="tooltip-more">
-                    <nuxt-link
-                    v-if="tooltips.includes('edit')"
-                    :to="`/${role}/${getEntity}/edit?entity_id=${data.id}`">
-                        Редактировать
-                    </nuxt-link>
-                </tool-tips>
+        <!-- <div class="header header-header">
+            <div class="header__item" v-if="data.fullData && getSender">
+                <span>Отправитель: </span>
+                <span>{{getSender}}</span>
             </div>
-            <div class="header__item company">
-                <h3>{{data.company}}</h3>
+            <div class="header__item">
+                <card-status
+                :isResponses="isResponses"
+                :status="data.fullData ? data.fullData.status : 'sended'"
+                v-if="isResponses">
+                </card-status>
             </div>
         </div> -->
+        <video-component
+        :videoSrc="`/${data.videos[0].path}`"
+        :poster="data.poster ? `/${data.poster.path}` : null"
+        :isRecord="false">
+        </video-component>
         <div class="footer">
-            <div class="footer__description">
-                <div class="footer__description--info">
-                    <div class="footer__description--info__item">
-                        <span>Опыт работы</span>
-                        <span>{{getWorkExperience}}</span>
+            <div :class="`left-block ${isProfile ? 'max-width' : ''}`">
+                <div class="header">
+                    <div class="header__item">
+                        <h3>{{data.position}}</h3>
+                        <!-- <tool-tips
+                        v-if="tooltips.length"
+                        class="tooltip-more">
+                            <nuxt-link
+                            v-if="tooltips.includes('edit')"
+                            :to="`/${role}/${getEntity}/edit?entity_id=${data.id}`">
+                                Редактировать
+                            </nuxt-link>
+                        </tool-tips> -->
                     </div>
-                    <div class="footer__description--info__item">
-                        <span>График</span>
-                        <span>{{data.schedule}}</span>
+                    <div class="header__item company">
+                        <h3>{{data.company}}</h3>
                     </div>
-                    <div class="footer__description--info__item">
-                        <span>Зарплата</span>
-                        <span>{{data.salary}}</span>
-                    </div>
-                    <div class="footer__description--info__item">
-                        <span>Дата публикации</span>
-                        <span>{{getDate}}</span>
-                    </div>
+                    <!-- <div class="header__item company">
+                        <h3>{{data.first_name + ' ' + data.last_name}}</h3>
+                    </div> -->
                 </div>
-                <p>
-                    {{data.description}}
-                </p>
-            </div>
-            <div class="footer__contacts">
-                <div class="footer__contacts__contact">
-                    <div class="footer__contacts__contact--header">
-                        <span>Связаться</span>
-                        <!-- <i class="el-icon-phone"></i> -->
-                    </div>
-                    <div class="footer__contacts__contact--contacts" v-if="role === 'applicant' || (data.fullData && data.fullData.status === 'accepted')">
-                        <span
-                        @click="onOpenContacts"
-                        v-if="!contacts"
-                        class="footer__contacts__contact--contacts--show-contacts">
-                            Показать контакты
-                        </span>
-                        <div
-                        v-else
-                        class="footer__contacts__contact--contacts--showed-contacts">
-                            <div
-                            v-if="contacts.phone"
-                            class="footer__contacts__contact--contacts--showed-contacts__item">
-                                <i class="el-icon-phone"></i>
-                                <span>{{contacts.phone}}</span>
-                            </div>
-                            <div
-                            v-if="contacts.email"
-                            class="footer__contacts__contact--contacts--showed-contacts__item">
-                                <i class="el-icon-message"></i>
-                                <span>{{contacts.email}}</span>
-                            </div>
+                <div class="footer__description">
+                    <div class="footer__description--info">
+                        <div class="footer__description--info__item">
+                            <span>Опыт работы</span>
+                            <span>{{getWorkExperience}}</span>
+                        </div>
+                        <div class="footer__description--info__item">
+                            <span>График</span>
+                            <span>{{data.schedule}}</span>
+                        </div>
+                        <div class="footer__description--info__item">
+                            <span>Зарплата</span>
+                            <span>{{data.salary}}</span>
+                        </div>
+                        <div class="footer__description--info__item">
+                            <span>Дата публикации</span>
+                            <span>{{getDate}}</span>
                         </div>
                     </div>
-                    <div class="footer__contacts__contact--contacts" v-if="role === 'employer' && data.fullData && data.fullData.status !== 'accepted'" style="font-size: 14px">
-                        {{!errorContacts ? `Контакты будут доступны после принятия приглашения` : 'Ваше отклик был отклонен. Контакты закрыты'}}
-                    </div>
+                    <p>
+                        {{data.description}}
+                    </p>
                 </div>
+            </div>
+            <div class="footer__contacts" v-if="!isProfile">
+                <!-- {{`${isAuth}, ${role}`}} -->
+                <modal-contacts
+                v-if="isAuth"
+                :role="role"
+                :isAuth="isAuth"
+                :tempRole="tempRole"
+                :contacts="contacts"
+                :data="data"
+                :onOpenContacts="onOpenContacts"
+                :errorContacts="errorContacts">
+                </modal-contacts>
                 <div class="footer__contacts__handlers">
-                    <el-button
-                    v-if="role === 'applicant' && !data.response && !isResponses"
-                    type="info"
-                    @click.stop="onResponse(data)"
-                    class="bordering-button">
-                        Отправить резюме
-                    </el-button>
-                    <el-button
-                    type="primary"
-                    v-if="onVerdict && data.fullData && (data.fullData.sender === 'Employer' && role === 'applicant' || data.fullData.sender === 'Employer' && role === 'applicant')  && data.fullData.status !== 'accepted' && data.fullData.status !== 'rejected'"
-                    @click.stop="onChangeVerdict(role, data.fullData.id, 'accept')">
-                        Принять
-                    </el-button>
-                    <el-button
-                    v-if="onVerdict && data.fullData && (data.fullData.sender === 'Employer' && role === 'applicant' || data.fullData.sender === 'Employer' && role === 'applicant') && data.fullData.status !== 'accepted' && data.fullData.status !== 'rejected'"
-                    type="info"
-                    @click.stop="onChangeVerdict(role, data.fullData.id, 'reject')"
-                    class="bordering-button">
-                        Отклонить
-                    </el-button>
-                    <el-button
-                    v-if="role === 'employer' && data.fullData && data.fullData.status === 'sended'"
-                    @click.stop="onResponse(data)"
-                    class="card__on-response-button">
-                        {{data.response ? 'Вы уже откликнулись' : 'Пригласить'}}
-                    </el-button>
+                    <div class="footer__contacts__handlers--not-auth" v-if="!isAuth">
+                        <el-button
+                        type="info"
+                        @click.stop="$router.push(`/register`)"
+                        class="bordering-button">
+                            {{tempRole === 'applicant' ? 'Отправить резюме' : 'Пригласить'}}
+                        </el-button>
+                    </div>
+                    <div class="footer__contacts__handlers--auth" v-else>
+                        <el-button
+                        v-if="!isResponses && !isProfile && role === 'applicant'"
+                        type="info"
+                        @click.stop="onResponse(data, resumesWithoutResponse)"
+                        class="bordering-button">
+                            {{data.responded ? 'Вы уже откликнулись' : 'Отправить резюме'}}
+                        </el-button>
+                        <el-button
+                        v-if="!isResponses && !isProfile && role === 'employer'"
+                        @click.stop="onResponse(data, vacanciesWithoutResponse)"
+                        class="card__on-response-button">
+                            {{data.responded ? 'Вы уже откликнулись' : 'Пригласить'}}
+                        </el-button>
+                        <!-- {{!!data.fullData}}  {{data.fullData.sender }} -->
+                        <el-button
+                        type="primary"
+                        v-if="onVerdict && data.fullData && ((data.fullData.sender === 'Employer' && role === 'applicant') || (data.fullData.sender === 'Worker' && role === 'employer'))  && data.fullData.status !== 'accepted' && data.fullData.status !== 'rejected'"
+                        @click.stop="onChangeVerdict(role, data.fullData.id, 'accept')">
+                            Принять
+                        </el-button>
+                        <el-button
+                        v-if="onVerdict && data.fullData && (data.fullData.sender === 'Employer' && role === 'applicant' || data.fullData.sender === 'Worker' && role === 'employer') && data.fullData.status !== 'accepted' && data.fullData.status !== 'rejected'"
+                        type="info"
+                        @click.stop="onChangeVerdict(role, data.fullData.id, 'reject')"
+                        class="bordering-button">
+                            Отклонить
+                        </el-button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -118,11 +125,14 @@ import { mapState } from 'vuex'
 import VideoComponent from '@/ui/Video'
 import moment from 'moment'
 import ToolTips from './ComponentTooltips'
-
+import ModalContacts from './ModalCardFormContacts'
+import CardStatus from './ComponentCardStatus'
 export default {
     components: {
         VideoComponent,
-        ToolTips
+        ToolTips,
+        ModalContacts,
+        CardStatus
     },
     props: {
         onResponse: {
@@ -148,6 +158,11 @@ export default {
             required: false,
             default: []
         },
+        isProfile: {
+            type: Boolean,
+            required: false,
+            default: false
+        }
     },
     data: () => ({
         openContacts: false,
@@ -164,9 +179,9 @@ export default {
                 console.log(e)
             }
         },
-        async onOpenContacts() {
+        async onOpenContacts(role) {
             try {
-                const response = await this.$axios.$get(`/${this.role === 'applicant' ? 'vacancies' : 'resumes'}/${this.data.id}/contacts`)
+                const response = await this.$axios.$get(`/${role === 'applicant' ? 'vacancies' : 'resumes'}/${this.data.id}/contacts`)
                 this.contacts = response
             } catch(e) {
                 console.log(e)
@@ -176,7 +191,9 @@ export default {
     computed: {
         ...mapState({
             data: state => state.tempForm,
-            role: state => state.role
+            role: state => state.role,
+            isAuth: state => state.role ? true : false,
+            tempRole: state => state.tempRole
         }),
         getWorkExperience() {
             const exp = this.data.work_experience
@@ -185,6 +202,40 @@ export default {
         },
         getDate() {
             return moment.unix(this.data.date_of_change).format('DD MMMM, YYYYг.')
+        },
+        getSender() {
+            switch (this.data.fullData.sender) {
+                case 'Worker': {
+                    if (this.role === 'applicant') return 'Вы'
+                } 
+                case 'Employer': {
+                    if (this.role === 'employer') return 'Вы'
+                    else this.data.fullData.id
+                } 
+            }
+        },
+        resumesWithoutResponse() {
+            const resumes = JSON.parse(JSON.stringify(this.myEntities.data))
+            if (!this.data.responses.length) return resumes
+            const keys = resumes.map((resume, key) => {
+                if (this.data.responses.some(response => resume.id === response.resume.id)) return resume.id
+            }).filter(item => !!item)
+            console.log(keys)
+            keys.map(key => resumes.splice(resumes.findIndex(resume => resume.id === key), 1))
+            return resumes
+        },
+        vacanciesWithoutResponse() {
+            const vacancies = JSON.parse(JSON.stringify(this.myEntities.data))
+            console.log(vacancies)
+            if (!this.data.responses.length) return vacancies
+            const keys = vacancies.map((vacancy, key) => {
+                if (this.data.responses.some(response => vacancy.id === response.vacancy.id)) return vacancy.id
+            }).filter(item => !!item)
+            keys.map(key => vacancies.splice(vacancies.findIndex(vacancy => vacancy.id === key), 1))
+            return vacancies
+        },
+        myEntities() {
+            return this.$store.state[this.getEntity]
         }
     }
 }
@@ -211,31 +262,39 @@ export default {
         overflow-y: auto
     .card-form::-webkit-scrollbar
         display: none
-    .header
-        padding: 20px 0
-        border-bottom: 1px solid #63636340
-        display: flex
-        flex-direction: column
-        h3
-            font-size: 24px
-        .company-name
-            font-weight: bold
-            color: #636363
-        &__item
-            display: flex
-            justify-content: space-between
-            align-items: center
     .footer
         margin-top: 20px
         display: flex
-        &__description
+        .left-block
+            display: flex
+            flex-direction: column
             flex: 0.7
             margin-right: 20px
+        .header
+            padding: 20px 0
+            border-bottom: 1px solid #63636340
+            display: flex
+            flex-direction: column
+            width: 100%
+            &-header
+                margin: 15px 0
+            h3
+                font-size: 24px
+            .company-name
+                font-weight: bold
+                color: #636363
+            &__item
+                display: flex
+                justify-content: space-between
+                align-items: center
+                color: #636363
+        &__description
+            width: 100%
             &--info
                 display: flex
                 flex-direction: column
                 border-bottom: 1px solid #cfcfcf
-                padding-bottom: 10px
+                padding: 10px 0
                 margin-bottom: 20px
                 &__item
                     line-height: 38px
@@ -278,12 +337,21 @@ export default {
                 flex: 0.3
                 display: flex
                 flex-direction: column
-                button
-                    margin: 0
-                button:last-child
-                    margin-top: 10px
+                &--not-auth, &--auth
+                    display: flex
+                    flex-direction: column
+                    button
+                        width: 100%
+                        height: 45px
+                        margin: 0
+                        margin-top: 15px
+                    button:first-child
+                        margin: 0
     .card__on-response-button
         color: #fff
+    .max-width
+        flex: 1 !important
+        margin: 0 !important
     @media screen and (max-width: 900px)
         .card-form
             width: auto
@@ -291,14 +359,13 @@ export default {
                 flex-direction: column
                 height: auto !important
                 padding-bottom: 25px
+                .left-block
+                    margin-right: 0px !important
                 &__contacts
+                    flex-direction: row
                     &__handlers
                         flex-direction: row
-                        button
-                            width: 50%
-                            margin: 0
-                        button:last-child
-                            margin-left: 15px
+                        margin-left: 25px
                 &__description
                     flex: 0
                     margin-bottom: 25px
@@ -309,17 +376,31 @@ export default {
                         &__item
                             width: 100%
 
-    @media screen and (max-width: 900px)
+    @media screen and (max-width: 580px)
         .card-form
             width: auto
             .footer
                 &__contacts
+                    flex-direction: column
                     &__handlers
-                        flex-direction: column
+                        justify-content: center
+                        margin-left: 0px
+                        &--not-auth, &--auth
+                            flex-direction: column
+                        button
+                            width: 200px
+    @media screen and (max-width: 450px)
+        .card-form
+            width: auto
+            .footer
+                font-size: 14px
+                .header
+                    h3
+                        font-size: 20px
+                &__contacts
+                    &__handlers
+                        &--not-auth, &--auth
+                            width: 100%
                         button
                             width: 100%
-                            margin: 0 !important
-
-                        button:last-child
-                            margin-top: 15px !important
 </style>

@@ -40,5 +40,5 @@ export const formItems = [
 const crypto = require('crypto')
 
 export const generateID = () => {
-  return crypto.randomBytes(8).toString('hex')
+  return crypto.randomBytes(2).toString('hex')
 }

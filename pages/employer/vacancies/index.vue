@@ -5,8 +5,10 @@
                 <nuxt-link class="search__button" to="/employer/vacancies/create">Добавить вакансию</nuxt-link>
             </div>
             <component-list
-            :tooltips="['edit']"
-            :data="vacancies">
+            :handleDelete="handleDelete"
+            :tooltips="['edit', 'delete']"
+            :data="vacancies"
+            :isProfile="true">
             </component-list>
         </div>
     </profile-wrapper>
@@ -34,6 +36,19 @@ export default {
     },
     computed: {
         ...mapState(['vacancies', 'role'])
+    },
+    methods: {
+        async handleDelete(id) {
+            try {
+                await this.$store.dispatch('removeEntity', {
+                    entityName: 'resumes',
+                    id,
+                    inStore: true
+                })
+            } catch(e) {
+                console.log(e)
+            }
+        }
     },
     async asyncData({isDev, route, store, env, params, query, req, res, redirect, error, $axios}) {
         await store.dispatch('getEntities', {

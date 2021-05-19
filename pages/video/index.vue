@@ -2,11 +2,16 @@
     <div class="wrapper">
         <bread-crumb></bread-crumb>
         <div class="video-select" v-if="!videoType">
-            <r-button @click="videoType = 'record'">Записать видео</r-button>
+            <r-button
+            v-if="navigatorSupport === true"
+            @click="videoType = 'record'">
+                Записать видео
+            </r-button>
             <el-upload
             v-loading="loading"
             drag
             class="upload-video"
+            accept="video/mp4,video/x-m4v,video/*"
             action="/posts"
             :on-success="onSuccessVideo"
             :on-progress="onProgressVideo">
@@ -22,28 +27,21 @@
             :isRecord="isRecord">
             </video-component>
             <div class="handlers" v-if="isRecord">
-                <el-button type="info" class="bordering-button" @click="recordingState = 'recording'">
+                <el-button v-if="recordingState !== 'recording'" type="info" class="bordering-button" @click="recordingState = 'recording'">
                     Начать запись
                 </el-button>
-                <el-button type="info" class="bordering-button" @click="recordingState = 'stop'">
+                <el-button
+                v-if="recordingState === 'recording'" type="info" class="bordering-button" @click="recordingState = 'stop'">
                     Остановить
                 </el-button>
-                <el-button type="info" class="bordering-button" @click="recordingState = 'finish'">
+                <el-button
+                v-if="recordingState === 'recording'" type="info" class="bordering-button" @click="recordingState = 'finish'">
                     Закончить запись
                 </el-button>
             </div>
             <div class="handlers" v-else>
-                <el-button type="info" class="bordering-button" @click="recordingState = 'reset'">
+                <el-button type="info" class="bordering-button" @click="recordingState = 'reset'; posters = []">
                     Перезаписать
-                </el-button>
-            </div>
-            <div class="handlers">
-                <el-button
-                size="large"
-                type="primary"
-                class="submit-button"
-                @click="onSubmit">
-                    Продолжить
                 </el-button>
             </div>
         </div>
@@ -89,7 +87,7 @@
                     <i class="el-icon-upload"></i>
                     <div class="el-upload__text">Перетащите фото или кликните для загрузки</div>
                 </div>
-                <div class="el-upload__tip" slot="tip">Или выберите свое фото для превью</div>
+                <div class="el-upload__tip" slot="tip">Выберите свое фото для превью</div>
             </el-upload>
         </div>
         
@@ -159,19 +157,20 @@ export default {
                 console.log(e)
             }
         },
-        saveVideo(file) {
+        async saveVideo(file) {
             console.log(file)
             this.isRecord = !this.isRecord
             const formData = new FormData()
             formData.append('video', file)
             formData.append('format', 'mp4')
             this.formData = formData
+            await this.onSubmit()
         },
         async onChangePoster(poster) {
             console.log(poster)
             try {
                 const response = await this.$axios.$post(`/${this.getEntity}/${this.$route.query.entity_id}/posters/${poster.id}/select`)
-                this.$router.push(`/${this.role}/${this.getEntity}?entity_id=${this.$route.query.entity_id}`)
+                this.$router.push(`/${this.role}/${this.getEntity}`)
             } catch(e) {
                 console.log(e)
             }
@@ -186,6 +185,8 @@ export default {
                         'Content-type': 'multipart/form-data'
                     }
                 })
+                this.posters = response.data
+                this.$forceUpdate()
                 console.log(response)
             } catch(e) {
                 console.log(e)
@@ -206,6 +207,7 @@ export default {
             formData.append('format', 'mp4')
             this.formData = formData
             const response = await this.onSubmit()
+            
             this.uploadVideoSrc = response.videos[0].path
             this.loadingVideo = false
             this.videoType = 'upload'
@@ -241,6 +243,7 @@ export default {
             width: 100%
             height: 100%
             position: relative
+            background: #000
             img
                 width: 100%
                 height: 100%
@@ -262,7 +265,7 @@ export default {
                 transition: .1s
                 &:hover
                     opacity: 1
-                    background: rgba(0, 0, 0, 0.5)
+                    background: rgba(0, 0, 0, 0.2)
         .upload-poster
             width: 300px
 

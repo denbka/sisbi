@@ -73,10 +73,10 @@ export default {
         }
     },
     async asyncData({ store, $axios }) {
-        store.commit('SET_ITEMS', {
-            entityName: 'view',
-            response: 'grid'
-        })
+        // store.commit('SET_ITEMS', {
+        //     entityName: 'view',
+        //     response: 'grid'
+        // })
         await store.dispatch('getEntities', {
             entityName: 'vacancies',
             $axios,

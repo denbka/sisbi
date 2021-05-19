@@ -88,4 +88,6 @@ export default {
                 .change
                     order: 1
                     width: 50%
+        .profile-form .el-form-item__content .title
+            min-width: 0
 </style>

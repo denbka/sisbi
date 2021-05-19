@@ -6,7 +6,9 @@
             :key="item.id"
             :onResponse="onResponse"
             :data="item"
-            :tooltips="tooltips">
+            :tooltips="tooltips"
+            :handleDelete="handleDelete"
+            :isProfile="isProfile">
             </component-card>
         </div>
         <div :class="`list list--${view}`" v-else>
@@ -17,7 +19,10 @@
             :onRead="onRead"
             :fullData="item"
             :data="item[entity]"
-            :tooltips="tooltips">
+            :tooltips="tooltips"
+            :handleDelete="handleDelete"
+            :isProfile="isProfile"
+            :isResponses="isResponses">
             </component-card>
         </div>
         <Pagination
@@ -29,9 +34,10 @@
         <ui-modal name="CardModal">
             <template slot-scope="{ type }">
                 <modal-card-form
+                :isProfile="isProfile"
                 :tooltips="tooltips"
                 :onVerdict="onVerdict"
-                isResponses
+                :isResponses="isResponses"
                 :type="type"
                 :onResponse="onResponse">
                 </modal-card-form>
@@ -46,7 +52,10 @@
             </template>
         </ui-modal> -->
         <ui-modal name="ResponseModal">
-            <modal-response-form></modal-response-form>
+            <modal-response-form
+            :onConfirmParams="onConfirmParams"
+            :onResponse="onResponse">
+            </modal-response-form>
         </ui-modal>
     </div>
     <div v-else>Не найдено элементов.</div>
@@ -103,6 +112,19 @@ export default {
         onRead: {
             type: Function,
             required: false
+        },
+        handleDelete: {
+            type: Function,
+            required: false
+        },
+        isProfile: {
+            type: Boolean,
+            required: false,
+            default: false
+        },
+        onConfirmParams: {
+            type: Function,
+            required: false
         }
     },
     computed: {
@@ -112,6 +134,7 @@ export default {
         },
     },
     async mounted() {
+        console.log(this.data)
         if (this.$route.query.entity_id) {
             try {
                 const response = await this.$store.dispatch('getEntities', {
@@ -124,7 +147,7 @@ export default {
                     response
                 })
                 this.$modal.show('CardModal')
-                this.$router.replace('');
+                this.$router.replace('')
             } catch(e) {
                 console.log(e)
             }

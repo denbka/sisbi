@@ -3,7 +3,7 @@ export const state = () => ({
     refresh_token: null,
     user: null,
     role: null,
-    tempRole: 'applicant',
+    tempRole: null,
     tempForm: null,
     vacancies: {
         data: []
@@ -31,13 +31,25 @@ export const getters = {
     // vacancy: Object
     resumesWithResponses: state => {
         const { resumes, responses } = state
-        console.log(responses)
         return {
             ...resumes,
             data: resumes.data ? resumes.data.map(resume => {
                 return {
                     ...resume,
                     response: responses.data.find(response => response.resume.id === resume.id)
+                }
+            }) : []
+        }
+    },
+    vacanciesWithResponses: state => {
+        const { vacancies, responses } = state
+        console.log(vacancies.data)
+        return {
+            ...vacancies,
+            data: vacancies.data ? vacancies.data.map(vacancy => {
+                return {
+                    ...vacancy,
+                    response: responses.data.find(response => response.vacancy.id === vacancy.id)
                 }
             }) : []
         }
@@ -73,6 +85,10 @@ export const mutations = {
     SET_VACANCY_RESPONSES: (state, vacancy_id) => {
         const { responses, vacancyResponses } = state
         vacancyResponses.data = responses.data.filter(response => response.vacancy.id === vacancy_id)
+    },
+    DELETE_ENTITY: (state, { entityName, id }) => {
+        console.log(entityName, id)
+        state[entityName].data.splice(state[entityName].data.findIndex(item => item.id === id), 1)
     }
 }
 
@@ -118,7 +134,7 @@ export const actions = {
             let response
             if ($axios) response = await $axios.$get('/profile')
             else response = await this.$axios.$get('/profile')
-            console.log(response)
+            // console.log(response)
             commit('SET_USER_INFO', response)
         } catch(e) {
             console.log(e)
@@ -258,9 +274,10 @@ export const actions = {
             throw new Error(e)
         }
     },
-    async removeEntity({commit}, { entityName, id }) {
+    async removeEntity({commit}, { entityName, id, inStore = false }) {
         try {
             await this.$axios.$delete(!id ? `/${entityName}` : `/${entityName}/${id}`)
+            if (inStore) commit('DELETE_ENTITY', { entityName, id })
         } catch(e) {
             // console.log(e.data)
             throw new Error(e)

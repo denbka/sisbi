@@ -6,6 +6,7 @@
         v-loading="loading"
         drag
         class="upload-photo"
+        accept="image/png,image/jpg,image/jpeg"
         action="/posts/"
         :on-success="onSuccess"
         :on-progress="onProgress">

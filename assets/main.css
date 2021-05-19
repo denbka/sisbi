@@ -244,6 +244,31 @@ textarea {
 .el-upload-list {
   display: none !important;
 }
+
+.el-switch.is-checked .el-switch__core {
+  border-color: #F05F3F !important;
+  background: #F05F3F !important;
+}
+
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
+}
+
+.el-divider {
+  background-color: #eee !important;
+}
+
+.el-popper {
+  /* z-index: 999990 !important; */
+}
     
 @media screen and (max-width: 768px) {
   .upload-video {

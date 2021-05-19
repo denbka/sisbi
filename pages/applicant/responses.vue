@@ -4,7 +4,8 @@
             <carousel-cards
             :tooltips="['edit']"
             :role="role"
-            :items="resumes">
+            :items="resumes"
+            :isProfile="true">
             </carousel-cards>
             <div class="responses__offers">
                 <!-- <Sorts
@@ -46,13 +47,22 @@ export default {
         ProfileWrapper,
         CarouselCards
     },
+    mounted() {
+        console.log(this.responses)
+    },
     computed: {
-        ...mapState(['user', 'resumes', 'responses']),
+        ...mapState(['user', 'resumes', 'responses', 'tempForm']),
     },
     methods: {
         async onVerdict(role, response_id, type) {
             try {
-                return await this.$axios.$post(`/profile/responses/${response_id}/${type}`)
+                const response = await this.$axios.$post(`/profile/responses/${response_id}/${type}`)
+                this.$store.commit('SET_ITEMS', {
+                    entityName: 'tempForm',
+                    response: JSON.parse(JSON.stringify({...this.tempForm, fullData: {...this.tempForm.fullData, status: `${type}ed`}}))
+                })
+                console.log(response)
+                await this.getResponses()
             } catch(e) {
                 console.log(e)
             }
@@ -65,6 +75,21 @@ export default {
                 console.log(e)
             }
         },
+        async getResponses() {
+            try {
+                const response = await this.$axios.$get('/profile/responses', {
+                    params: {
+                        resume_id: this.resumes.data[this.$store.state.initialIndex].id
+                    }
+                })
+                this.$store.commit('SET_ITEMS', {
+                    entityName: 'responses',
+                    response
+                })
+            } catch(e) {
+                console.log(e)
+            }
+        }
     },
     async asyncData({isDev, route, store, $axios, env, params, query, req, res, redirect, error}) {
         const role = store.state.role

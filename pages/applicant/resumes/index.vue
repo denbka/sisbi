@@ -5,7 +5,9 @@
                 <nuxt-link class="add-resume" to="/applicant/resumes/create">Добавить резюме</nuxt-link>
             </div>
             <component-list
-            :tooltips="['edit']"
+            :handleDelete="handleDelete"
+            :tooltips="['edit', 'delete']"
+            :isProfile="true"
             :data="resumes">
             </component-list>
         </div>
@@ -34,6 +36,19 @@ export default {
     },
     computed: {
         ...mapState(['resumes', 'role'])
+    },
+    methods: {
+        async handleDelete(id) {
+            try {
+                await this.$store.dispatch('removeEntity', {
+                    entityName: 'resumes',
+                    id,
+                    inStore: true
+                })
+            } catch(e) {
+                console.log(e)
+            }
+        }
     },
     async asyncData({isDev, route, store, env, params, query, req, res, redirect, error, $axios}) {
         await store.dispatch('getEntities', {

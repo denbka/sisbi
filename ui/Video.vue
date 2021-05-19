@@ -9,6 +9,9 @@
         ref="player"></video>
         <!-- <video v-else controls :src="videoSrc ? videoSrc : null"></video> -->
         <div v-if="!isRecord" id="video-controls" class="controls" data-state="hidden">
+            <!-- <span v-if="recordingState === 'record'">
+
+            </span> -->
             <div class="progress" ref="progress" @click="onChangeProgress">
                 <span class="progress__bar" ref="progressBar"></span>
             </div>
@@ -271,10 +274,9 @@ export default {
         opacity: 1 !important
     .video-container
         position: relative
-        height: 450px
+        height: 450px !important
         width: 100%
         background: #000
-        margin-top: 50px
         .controls
             width: 100%
             position: absolute
@@ -354,5 +356,5 @@ export default {
             fill: #fff
     @media screen and (max-width: 1024px)
         .video-container
-            height: auto
+            height: 40vh !important
 </style>
